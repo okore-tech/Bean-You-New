@@ -65,15 +65,13 @@ export default function FaceOfBeanYouPage() {
           title: "Billy • Virtual Architect",
           desc:
             "Mapping beans into the metaverse. Real farms mapped virtually and divided into plots.",
-          video: " https://youtu.be/DXFX_pV-GUo ",
-          cta: "🎥 Watch Video",
+         
         },
         {
           img: "/images/joyce1.jpeg",
           title: "Joyce • Gen‑z tech",
           desc: "Ideology + tech to spark creativity and modern UI/UX.",
-          video: "https://youtu.be/oHg5SJYRHA0",
-          cta: "🎥 Watch Video",
+        
         },
       ],
       applicants: [
@@ -85,7 +83,7 @@ export default function FaceOfBeanYouPage() {
           cta: "🎥 Watch Video",
         },
         {
-          img: "/images/applicant1.jpg",
+          img: "/images/Vivian.jpg",
           title: "You? • Culture Crafter",
           desc: "Pitch your story. Build with us.",
           video: "https://youtu.be/3JZ_D3ELwOQ",

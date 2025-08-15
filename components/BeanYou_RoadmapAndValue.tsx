@@ -3,12 +3,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Poppins } from "next/font/google";
+
+/* ===== Font (local, page-only fix) ===== */
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-poppins",
+});
 
 /* ===========================
    Bean You — Roadmap + Values
    =========================== */
 
-// ---------- Updated Roadmap Data (same content you sent) ----------
+// ---------- Roadmap Data ----------
 const ROADMAP_ITEMS: Array<{
   year: string;
   title: string;
@@ -51,18 +60,18 @@ const ROADMAP_ITEMS: Array<{
       "Issue Bean You® Points rewarding good ESG behaviour",
     ],
     artSrc: "/images/globe.png",
-    ctas: [], // app CTAs handled by SmartAppButton
+    ctas: [],
   },
   {
     year: "2027",
     title: "IPO on London Stock Market",
     details: [],
     artSrc: "/images/biotech.png",
-    ctas: [], // app CTAs handled by SmartAppButton
+    ctas: [],
   },
 ];
 
-// ---------- Value slides (unchanged) ----------
+// ---------- Value slides ----------
 const VALUE_SLIDES: Array<{
   key: string;
   image: string;
@@ -75,8 +84,7 @@ const VALUE_SLIDES: Array<{
     key: "connections",
     image: "/images/values.png",
     heading: "Free, Purpose-Led Connections",
-    blurb:
-      "Find your tribe by values & actions — learn, play, and grow together.",
+    blurb: "Find your tribe by values & actions — learn, play, and grow together.",
     bullets: ["Courses & challenges", "Tokens & rewards", "AI helpers"],
     cta: { label: "Meet Your Tribe", href: "/connect" },
   },
@@ -84,8 +92,7 @@ const VALUE_SLIDES: Array<{
     key: "cafes",
     image: "/images/cafe01.png",
     heading: "10,000+ Cafés = Real-World Network",
-    blurb:
-      "Cafés host tribes, redeem rewards, and anchor local communities.",
+    blurb: "Cafés host tribes, redeem rewards, and anchor local communities.",
     bullets: ["In-store rewards", "Events & pop-ups", "Brand promos"],
     cta: { label: "Partner With Us", href: "/partners" },
   },
@@ -93,8 +100,7 @@ const VALUE_SLIDES: Array<{
     key: "irwa",
     image: "/images/token.png",
     heading: "Farms + iRWA Platform",
-    blurb:
-      "Adopt coffee crops, track the journey, and support ESG projects.",
+    blurb: "Adopt coffee crops, track the journey, and support ESG projects.",
     bullets: ["Platform tools", "Service revenue", "Donations"],
     cta: { label: "Explore Farm Platform", href: "https://parcels.beanyou.com/" },
   },
@@ -121,23 +127,18 @@ function useRevealOnScroll<T extends HTMLElement>(threshold = 0.2) {
   return ref;
 }
 
-/* ---------- Smart single app button (Android/iOS redirect) ---------- */
+/* ---------- Smart single app button ---------- */
 function SmartAppButton() {
   const handleClick = () => {
     if (typeof window === "undefined") return;
     const ua = navigator.userAgent || (navigator as any).vendor || (window as any).opera;
-
-    const android =
-      "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB";
+    const android = "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB";
     const ios =
       "https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2";
 
-    if (/android/i.test(ua)) {
-      window.location.href = android;
-    } else if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) {
-      window.location.href = ios;
-    } else {
-      // fallback: open both in new tabs
+    if (/android/i.test(ua)) window.location.href = android;
+    else if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) window.location.href = ios;
+    else {
       window.open(android, "_blank");
       window.open(ios, "_blank");
     }
@@ -146,7 +147,7 @@ function SmartAppButton() {
   return (
     <button
       onClick={handleClick}
-      className="px-4 py-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
+      className="px-5 py-2.5 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
       aria-label="Get the Bean You app"
     >
       Get the App
@@ -154,59 +155,95 @@ function SmartAppButton() {
   );
 }
 
-/* ---------- Roadmap Mosaic (no center line) ---------- */
+/* ---------- Roadmap Mosaic ---------- */
 function RoadmapMosaic({ items = ROADMAP_ITEMS }: { items?: typeof ROADMAP_ITEMS }) {
   return (
-    <section id="roadmap" className="relative py-24 overflow-hidden">
-      {/* Background */}
+    <section id="roadmap" className="relative py-20 md:py-24 overflow-hidden">
+      {/* Background to match previous section */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#2a150e] via-[#793A17] to-[#F3B019] opacity-90" />
       <div className="absolute inset-0 [clip-path:polygon(0_0,100%_6%,100%_100%,0_94%)] bg-white/5" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4 text-[#FDE68A] drop-shadow">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-3 text-[#FDE68A] drop-shadow">
           Roadmap
         </h2>
-        <p className="text-center text-orange-100/90 mb-14 max-w-3xl mx-auto">
+        <p className="text-center text-orange-100/90 mb-12 md:mb-14 max-w-3xl mx-auto text-[15.5px]">
           Our not-for-profit Foundation, ESG crops, cafés, gifts — including tokens and
           free benefits. Follow our journey.
         </p>
 
-        {/* Grid — unchanged styles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {items.map((step, idx) => (
             <RoadmapItem key={`${step.year}-${idx}`} step={step} idx={idx} />
           ))}
         </div>
       </div>
 
-      {/* Particles */}
+      {/* Particles (kept) */}
       <div aria-hidden className="pointer-events-none absolute inset-0 opacity-30">
         <Particles />
       </div>
 
-      {/* Local styles (kept) */}
+      {/* Local styles */}
       <style jsx global>{`
-        .card-reveal { opacity: 0; transform: translateY(16px) scale(.98); }
-        .card-reveal.in-view { opacity: 1; transform: translateY(0) scale(1); transition: all .6s cubic-bezier(.2,.8,.2,1); }
-
+        .card-reveal {
+          opacity: 0;
+          transform: translateY(14px) scale(0.985);
+        }
+        .card-reveal.in-view {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
         .year-pill {
-          background-image: linear-gradient(90deg,#8B1E1E,#7A3A17,#BD570F,#F97316);
+          background-image: linear-gradient(90deg, #8b1e1e, #7a3a17, #bd570f, #f97316);
           background-size: 200% 100%;
           animation: yearSlide 0.9s ease-out both, yearShimmer 6s linear infinite;
         }
-        @keyframes yearSlide { from { transform: translateX(-24px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes yearShimmer { 0% { background-position: 0% 0%; } 50% { background-position: 100% 0%; } 100% { background-position: 0% 0%; } }
-
-        .hue-rotate-anim { animation: hueShift 9s linear infinite; }
-        @keyframes hueShift { 0% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(12deg) saturate(1.05); } 100% { filter: hue-rotate(0deg); } }
-
-        .roadmap-card:hover .year-pill { filter: drop-shadow(0 8px 22px rgba(249,115,22,.55)); }
+        @keyframes yearSlide {
+          from {
+            transform: translateX(-24px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes yearShimmer {
+          0% {
+            background-position: 0% 0%;
+          }
+          50% {
+            background-position: 100% 0%;
+          }
+          100% {
+            background-position: 0% 0%;
+          }
+        }
+        .hue-rotate-anim {
+          animation: hueShift 9s linear infinite;
+        }
+        @keyframes hueShift {
+          0% {
+            filter: hue-rotate(0deg);
+          }
+          50% {
+            filter: hue-rotate(12deg) saturate(1.05);
+          }
+          100% {
+            filter: hue-rotate(0deg);
+          }
+        }
+        .roadmap-card:hover .year-pill {
+          filter: drop-shadow(0 8px 22px rgba(249, 115, 22, 0.55));
+        }
       `}</style>
     </section>
   );
 }
 
-/* ---------- One item: YEAR on top + image/card below ---------- */
+/* ---------- One item: YEAR above + card ---------- */
 function RoadmapItem({
   step,
   idx,
@@ -214,25 +251,19 @@ function RoadmapItem({
   step: (typeof ROADMAP_ITEMS)[number];
   idx: number;
 }) {
-  // filter out Android/iOS duplicates; SmartAppButton will be added
-  const nonAppCtas = (step.ctas || []).filter(
-    (c) => !/(android|ios)/i.test(c.label)
-  );
+  const nonAppCtas = (step.ctas || []).filter((c) => !/(android|ios)/i.test(c.label));
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* YEAR shown ABOVE the card (prevents image cropping) */}
-      <div className="pl-1">
+    <div className="flex flex-col gap-2.5 sm:gap-3">
+      <div className="pl-0.5">
         <YearSticker year={step.year} />
       </div>
-
-      {/* Card body — unchanged visual style */}
       <RoadmapCard step={{ ...step, ctas: nonAppCtas }} idx={idx} />
     </div>
   );
 }
 
-/* ---------- Card body (no year inside!) ---------- */
+/* ---------- Card body (image container updated) ---------- */
 function RoadmapCard({
   step,
   idx,
@@ -245,28 +276,30 @@ function RoadmapCard({
   return (
     <div
       ref={ref}
-      className="card-reveal relative group roadmap-card rounded-[28px] border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_15px_50px_rgba(0,0,0,0.35)] p-5 md:p-7 overflow-hidden"
+      className="card-reveal relative group roadmap-card rounded-[26px] border border-white/18 bg-white/10 backdrop-blur-xl shadow-[0_15px_50px_rgba(0,0,0,0.35)] p-5 sm:p-6 md:p-7 overflow-hidden"
     >
-      {/* Body */}
-      <div className="grid grid-cols-1 sm:grid-cols-[160px,1fr] gap-5 items-center">
-        {/* Image container */}
-        <div className="relative w-full h-40 sm:h-36 rounded-2xl border border-white/20 bg-gradient-to-br from-white/10 via-white/20 to-white/10 [clip-path:polygon(12%_0,100%_0,100%_88%,88%_100%,0_100%,0_12%)] hue-rotate-anim">
+      <div className="grid grid-cols-1 sm:grid-cols-[180px,1fr] gap-5 items-center">
+        {/* Image frame: cover on mobile, contain on desktop */}
+        <div className="relative w-full h-44 sm:h-40 md:h-44 lg:h-52 rounded-2xl border border-white/20 bg-gradient-to-br from-white/10 via-white/20 to-white/10 hue-rotate-anim overflow-hidden">
+          <div className="absolute inset-0 rounded-2xl [clip-path:polygon(12%_0,100%_0,100%_88%,88%_100%,0_100%,0_12%)] pointer-events-none" />
           <Image
             src={step.artSrc}
             alt={`${step.year} art`}
             fill
-            sizes="(max-width: 640px) 100vw, 160px"
-            className="object-cover object-center select-none"
+            sizes="(max-width: 640px) 100vw, 180px"
+            className="object-cover md:object-contain md:p-3"
             priority={idx < 1}
           />
         </div>
 
         {/* Text + CTAs */}
         <div>
-          <h3 className="text-2xl font-extrabold text-white/95">{step.title}</h3>
+          <h3 className="text-[18px] sm:text-[19px] md:text-[20px] lg:text-[22px] font-extrabold text-white/95 leading-snug">
+            {step.title}
+          </h3>
 
           {step.details.length > 0 && (
-            <ul className="mt-3 space-y-2 text-orange-50/90 text-sm leading-relaxed">
+            <ul className="mt-3 space-y-2 text-orange-50/90 text-[14px] leading-relaxed">
               {step.details.map((d, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <span className="mt-1 h-2 w-2 rounded-full bg-yellow-300/90 shrink-0 animate-pulse" />
@@ -278,19 +311,16 @@ function RoadmapCard({
 
           {(step.ctas?.length ?? 0) > 0 || true ? (
             <div className="mt-5 flex flex-wrap gap-3">
-              {/* Non-app CTAs as usual */}
               {step.ctas?.map((c) => (
                 <Link
                   key={c.label}
                   href={c.href}
                   target="_blank"
-                  className="px-4 py-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
+                  className="px-4 py-2.5 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
                 >
                   {c.label}
                 </Link>
               ))}
-
-              {/* Single smart redirect app button */}
               <SmartAppButton />
             </div>
           ) : null}
@@ -300,19 +330,19 @@ function RoadmapCard({
   );
 }
 
-/* ---------- Year pill (unchanged style) ---------- */
+/* ---------- Year pill ---------- */
 function YearSticker({ year }: { year: string }) {
   return (
     <div className="relative inline-block select-none">
-      <div className="year-pill px-6 py-2 rounded-full text-3xl md:text-5xl font-extrabold text-white shadow-[0_10px_30px_rgba(0,0,0,.45)] ring-2 ring-white/20 leading-none">
-        <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,.6)] tracking-wider">{year}</span>
+      <div className="year-pill px-5 sm:px-6 py-2 rounded-full text-2xl sm:text-3xl md:text-4xl font-extrabold text-white shadow-[0_10px_30px_rgba(0,0,0,.45)] ring-2 ring-white/20 leading-none">
+        <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,.6)] tracking-wide">{year}</span>
       </div>
       <div className="absolute -inset-1 rounded-full blur-sm bg-[conic-gradient(at_50%_50%,#ffffff33,transparent_30%)] opacity-60 pointer-events-none" />
     </div>
   );
 }
 
-/* ---------- Floating particles (unchanged) ---------- */
+/* ---------- Floating particles ---------- */
 function Particles() {
   const dots = new Array(20).fill(0);
   return (
@@ -331,16 +361,25 @@ function Particles() {
       ))}
       <style jsx>{`
         @keyframes floaty {
-          0%, 100% { transform: translateY(0) scale(1); opacity: .9; }
-          50% { transform: translateY(-10px) scale(1.02); opacity: 1; }
+          0%,
+          100% {
+            transform: translateY(0) scale(1);
+            opacity: 0.9;
+          }
+          50% {
+            transform: translateY(-10px) scale(1.02);
+            opacity: 1;
+          }
         }
-        .animate-float { animation: floaty 5s ease-in-out infinite; }
+        .animate-float {
+          animation: floaty 5s ease-in-out infinite;
+        }
       `}</style>
     </div>
   );
 }
 
-/* ---------- Value/Profit Carousel (kept) ---------- */
+/* ---------- Value/Profit Carousel (unchanged logic, tightened sizes) ---------- */
 function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_SLIDES }) {
   const [index, setIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -366,13 +405,11 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
   }, [index]);
 
   return (
-    <section id="value" className="relative overflow-hidden py-24">
-      {/* Deep gradient base */}
+    <section id="value" className="relative overflow-hidden py-20 md:py-24">
+      {/* Gradient base to match family */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#120805] via-[#2a150e] to-[#5f2c14]" />
-      {/* Soft radial glows */}
       <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[420px] rounded-full bg-[#F3B019]/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-[340px] w-[340px] rounded-full bg-[#F97316]/20 blur-3xl" />
-      {/* Subtle grid overlay */}
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.08] [mask-image:radial-gradient(ellipse_at_center,black,transparent_65%)]"
@@ -383,12 +420,12 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
         }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4">
-        <div className="text-center mb-10">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8 md:mb-10">
           <span className="inline-block text-xs md:text-sm tracking-[.2em] uppercase text-yellow-300/90">
             The Bean-You Value Engine
           </span>
-          <h2 className="mt-3 text-4xl md:text-5xl font-extrabold text-white">
+          <h2 className="mt-3 text-3xl md:text-5xl font-extrabold text-white">
             Free connection for users. Smart profits for the ecosystem.
           </h2>
         </div>
@@ -419,15 +456,13 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
             </div>
           </div>
 
-        <div className="rounded-3xl p-7 bg-white/10 backdrop-blur-lg border border-white/15 shadow-[0_15px_50px_rgba(0,0,0,.35)] flex flex-col">
+          <div className="rounded-3xl p-7 bg-white/10 backdrop-blur-lg border border-white/15 shadow-[0_15px_50px_rgba(0,0,0,.35)] flex flex-col">
             <div className="flex items-start gap-4">
               <div className="shrink-0 h-12 w-12 rounded-2xl bg-gradient-to-br from-yellow-300 to-orange-400 text-black grid place-items-center font-bold">
                 {index + 1}
               </div>
               <div>
-                <h3 className="text-2xl md:text-3xl font-bold text-white">
-                  {slides[index].heading}
-                </h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-white">{slides[index].heading}</h3>
                 <p className="mt-2 text-orange-50/95 leading-relaxed">{slides[index].blurb}</p>
               </div>
             </div>
@@ -471,7 +506,7 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
           <MobileCarousel slides={VALUE_SLIDES} />
         </div>
 
-        {/* Profit row (unchanged) */}
+        {/* Profit row */}
         {(() => {
           const profit = [
             { k: "Cafés & Events", d: "In-store revenue, memberships, promos" },
@@ -482,7 +517,7 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
           const slideToProfit: Record<string, number> = { connections: 3, cafes: 0, irwa: 2 };
           const active = slideToProfit[VALUE_SLIDES[index].key] ?? 0;
           return (
-            <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="mt-12 md:mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {profit.map((t, i) => (
                 <div
                   key={i}
@@ -499,10 +534,10 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
                         : "bg-gradient-to-br from-yellow-300/40 to-orange-500/30"
                     }`}
                   />
-                  <p className={`text-[13px] uppercase tracking-wide ${i === active ? "text-white" : "text-yellow-200"}`}>
+                  <p className={`text-[12.5px] uppercase tracking-wide ${i === active ? "text-white" : "text-yellow-200"}`}>
                     {t.k}
                   </p>
-                  <p className={`mt-1 text-xs ${i === active ? "text-white/90" : "opacity-90"}`}>{t.d}</p>
+                  <p className={`mt-1 text-[12.5px] ${i === active ? "text-white/90" : "opacity-90"}`}>{t.d}</p>
                 </div>
               ))}
             </div>
@@ -510,7 +545,7 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
         })()}
 
         {/* CTA bar */}
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-center gap-3">
+        <div className="mt-10 md:mt-12 flex flex-col md:flex-row items-center justify-center gap-3">
           <Link
             href="/connect"
             className="px-5 py-3 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
@@ -531,7 +566,7 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
   );
 }
 
-/* ---------- Mobile carousel (unchanged) ---------- */
+/* ---------- Mobile carousel ---------- */
 function MobileCarousel({ slides }: { slides: typeof VALUE_SLIDES }) {
   const [index, setIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -553,15 +588,15 @@ function MobileCarousel({ slides }: { slides: typeof VALUE_SLIDES }) {
         {slides.map((s) => (
           <article
             key={s.key}
-            className="snap-center shrink-0 w-[84%] rounded-3xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_14px_44px_rgba(0,0,0,.35)]"
+            className="snap-center shrink-0 w-[86%] rounded-3xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_14px_44px_rgba(0,0,0,.35)]"
           >
             <div className="relative h-52">
               <Image src={s.image} alt={s.heading} fill className="object-cover" />
             </div>
             <div className="p-5">
-              <h3 className="text-xl font-bold text-white">{s.heading}</h3>
-              <p className="mt-1 text-sm text-orange-50/95">{s.blurb}</p>
-              <ul className="mt-3 space-y-1 text-yellow-100/90 text-sm">
+              <h3 className="text-lg font-bold text-white">{s.heading}</h3>
+              <p className="mt-1 text-[14.5px] text-orange-50/95">{s.blurb}</p>
+              <ul className="mt-3 space-y-1 text-yellow-100/90 text-[13.5px]">
                 {s.bullets.map((b, bi) => (
                   <li key={bi} className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rounded-full bg-yellow-300" />
@@ -595,12 +630,12 @@ function MobileCarousel({ slides }: { slides: typeof VALUE_SLIDES }) {
   );
 }
 
-/* ---------- Exported wrapper ---------- */
+/* ---------- Exported wrapper (apply Poppins here) ---------- */
 export default function BeanYou_RoadmapAndValue() {
   return (
-    <>
+    <div className={`${poppins.className} antialiased`}>
       <RoadmapMosaic />
       <ValueProfitCarousel />
-    </>
+    </div>
   );
 }
