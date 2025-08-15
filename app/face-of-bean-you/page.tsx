@@ -6,6 +6,15 @@ import Image from "next/image";
 
 type Tab = "music" | "tech" | "applicants";
 
+type Card = {
+  img: string;
+  title: string;
+  desc: string;
+  alt?: string;
+  video?: string; // optional
+  cta?: string;   // optional
+};
+
 function isYouTubeUrl(url: string) {
   return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(url);
 }
@@ -40,21 +49,21 @@ export default function FaceOfBeanYouPage() {
   }, []);
 
   // Use YouTube URLs for tribe cards
-  const cards = useMemo(
+  const cards = useMemo<Record<Tab, Card[]>>(
     () => ({
       music: [
         {
           img: "/images/Kevin.jpg",
           title: "Kevin Mills • Musician",
           desc: "Afro-futuristic rhythms born of soul and steam.",
-          video: "https://youtu.be/h517KvsUmX0 ",
+          video: "https://youtu.be/h517KvsUmX0",
           cta: "🎥 Watch Video",
         },
         {
           img: "/images/Rock and Roll.png",
           title: "Gen-z • Band",
           desc: "Expression through music.",
-          video: "https://youtu.be/SQxvFfcRKlc ",
+          video: "https://youtu.be/SQxvFfcRKlc",
           cta: "🎥 Watch Video",
           alt: "Gen-z band",
         },
@@ -65,13 +74,13 @@ export default function FaceOfBeanYouPage() {
           title: "Billy • Virtual Architect",
           desc:
             "Mapping beans into the metaverse. Real farms mapped virtually and divided into plots.",
-         
+          // no video/cta on purpose
         },
         {
           img: "/images/joyce1.jpeg",
-          title: "Joyce • Gen‑z tech",
+          title: "Joyce • Gen-z tech",
           desc: "Ideology + tech to spark creativity and modern UI/UX.",
-        
+          // no video/cta on purpose
         },
       ],
       applicants: [
@@ -210,22 +219,25 @@ export default function FaceOfBeanYouPage() {
             <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
               {cards[filter].map((c, idx) => (
                 <div key={idx} className="card-mask group overflow-hidden rounded-xl bg-white shadow-xl" data-aos="fade-up">
-                  <Image src={c.img} alt={c.title} width={900} height={600} className="h-64 w-full object-cover" />
+                  <Image src={c.img} alt={c.alt ?? c.title} width={900} height={600} className="h-64 w-full object-cover" />
                   <div className="p-6 text-center">
                     <h3 className="text-xl font-bold text-orange-800">{c.title}</h3>
                     <p className="mt-2 text-sm text-[#4e342e]">{c.desc}</p>
-                    <button
-                      onClick={() => {
-                        if (!c.video) return;
-                        const yt = isYouTubeUrl(c.video);
-                        setIsYT(yt);
-                        setVideoUrl(yt ? toYouTubeEmbed(c.video) : c.video);
-                        setLightboxOpen(true);
-                      }}
-                      className="mt-4 rounded-full bg-orange-600 px-4 py-2 text-white transition hover:bg-orange-700"
-                    >
-                      {c.cta ?? "🎥 Watch Video"}
-                    </button>
+
+                    {/* Render button ONLY when a video exists */}
+                    {c.video && (
+                      <button
+                        onClick={() => {
+                          const yt = isYouTubeUrl(c.video as string);
+                          setIsYT(yt);
+                          setVideoUrl(yt ? toYouTubeEmbed(c.video as string) : (c.video as string));
+                          setLightboxOpen(true);
+                        }}
+                        className="mt-4 rounded-full bg-orange-600 px-4 py-2 text-white transition hover:bg-orange-700"
+                      >
+                        {c.cta ?? "🎥 Watch Video"}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
