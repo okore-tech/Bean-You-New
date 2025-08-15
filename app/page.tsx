@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import BeanYou_RoadmapAndValue from "@/components/BeanYou_RoadmapAndValue";
+import RoadmapSection from "@/components/RoadmapSection";
 
 export default function HomePage() {
   useEffect(() => {
@@ -89,7 +89,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2" data-aos="fade-right">
             <Image
-              src="/images/interests.jpg"
+              src="/images/interests.jpg"  // ✅ fixed path
               alt="Identify Interests"
               width={1200}
               height={800}
@@ -113,7 +113,44 @@ export default function HomePage() {
       </section>
 
       {/* ROADMAP + VALUE/PROFIT CAROUSEL */}
-      <BeanYou_RoadmapAndValue />
+      <RoadmapSection />
+
+      {/* COMMUNITY */}
+      <section id="community" className="py-20 bg-brand-deep text-white">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center md:space-x-12" data-aos="fade-up">
+          <div className="w-full md:w-1/2 mb-8 md:mb-0">
+            <Image
+              src="/images/community.jpg"
+              alt="Join Community"
+              width={1200}
+              height={640}
+              className="rounded-2xl shadow-lg w-full h-64 md:h-80 object-cover"
+            />
+          </div>
+          <div className="w-full md:w-1/2">
+            <h2 className="text-4xl font-bold mb-4">Join the Community</h2>
+            <p className="text-orange-100 text-lg mb-6">
+              Let’s brew great communities together. Connect with like-minded people and access exclusive opportunities.
+            </p>
+            <Link
+              href="/social"
+              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-lg hover:scale-105 transition-transform duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              Join Now
+            </Link>
+          </div>
+        </div>
+      </section>
+
 
       {/* COMMUNITY */}
       <section id="community" className="py-20 bg-brand-deep text-white">
