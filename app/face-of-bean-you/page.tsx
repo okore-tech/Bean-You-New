@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 
 type Tab = "music" | "tech" | "applicants";
@@ -48,7 +47,6 @@ export default function FaceOfBeanYouPage() {
     })();
   }, []);
 
-  // Use YouTube URLs for tribe cards
   const cards = useMemo<Record<Tab, Card[]>>(
     () => ({
       music: [
@@ -74,13 +72,13 @@ export default function FaceOfBeanYouPage() {
           title: "Billy • Virtual Architect",
           desc:
             "Mapping beans into the metaverse. Real farms mapped virtually and divided into plots.",
-          // no video/cta on purpose
+          // no video/cta
         },
         {
           img: "/images/joyce1.jpeg",
           title: "Joyce • Gen-z tech",
           desc: "Ideology + tech to spark creativity and modern UI/UX.",
-          // no video/cta on purpose
+          // no video/cta
         },
       ],
       applicants: [
@@ -131,12 +129,21 @@ export default function FaceOfBeanYouPage() {
       <main className="relative z-10">
         {/* HERO */}
         <section className="clip-diagonal relative overflow-hidden bg-[#fefae0] px-6 py-24 text-[#4e342e]">
-          <div className="floating-blob absolute left-0 top-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl"
-               style={{ backgroundColor: "#fecaca" }} data-aos="zoom-in" />
-          <div className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-2xl"
-               style={{ backgroundColor: "#ea580c" }} data-aos="zoom-in" data-aos-delay="300" />
-          <div className="pointer-events-none absolute inset-0 opacity-10"
-               style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div
+            className="floating-blob absolute left-0 top-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl"
+            style={{ backgroundColor: "#fecaca" }}
+            data-aos="zoom-in"
+          />
+          <div
+            className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-2xl"
+            style={{ backgroundColor: "#ea580c" }}
+            data-aos="zoom-in"
+            data-aos-delay="300"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-10"
+            style={{ backgroundImage: "url(/images/texture.png)" }}
+          />
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col-reverse items-center gap-10 md:flex-row">
             <div className="text-center md:w-1/2 md:text-left">
               <h1 className="mb-6 text-5xl font-bold">Find Your Tribe, Build Your Bean You.</h1>
@@ -164,12 +171,17 @@ export default function FaceOfBeanYouPage() {
           </div>
         </section>
 
-        {/* MISS KENYA (local file inline) */}
+        {/* MISS KENYA */}
         <section id="misskenya" className="relative overflow-hidden bg-orange-100 px-6 py-24 text-[#4e342e]">
-          <div className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl"
-               style={{ backgroundColor: "#c2410c" }} data-aos="fade-right" />
-          <div className="pointer-events-none absolute inset-0 opacity-10"
-               style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div
+            className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl"
+            style={{ backgroundColor: "#c2410c" }}
+            data-aos="fade-right"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-10"
+            style={{ backgroundImage: "url(/images/texture.png)" }}
+          />
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center justify-between gap-10 md:flex-row">
             <div className="md:w-1/2" data-aos="fade-right">
               <div className="overflow-hidden rounded-xl border-8 border-orange-200 shadow-2xl">
@@ -190,10 +202,15 @@ export default function FaceOfBeanYouPage() {
 
         {/* TRIBE SECTION */}
         <section id="faces" className="relative overflow-hidden bg-[#e1b382] px-6 py-24 text-[#4e342e]">
-          <div className="floating-blob absolute right-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-3xl"
-               style={{ backgroundColor: "#9a3412" }} data-aos="fade-left" />
-          <div className="pointer-events-none absolute inset-0 opacity-10"
-               style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div
+            className="floating-blob absolute right-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-3xl"
+            style={{ backgroundColor: "#9a3412" }}
+            data-aos="fade-left"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-10"
+            style={{ backgroundImage: "url(/images/texture.png)" }}
+          />
           <div className="relative z-10 mx-auto max-w-6xl">
             <h2 className="mb-12 text-center text-4xl font-bold">Meet the Tribe</h2>
 
@@ -215,9 +232,9 @@ export default function FaceOfBeanYouPage() {
               })}
             </div>
 
-            {/* Cards — single grid (no duplicate) */}
+            {/* Cards */}
             <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-              {cards[filter].map((c, idx) => (
+              {cards[filter].map((c: Card, idx) => (
                 <div key={idx} className="card-mask group overflow-hidden rounded-xl bg-white shadow-xl" data-aos="fade-up">
                   <Image src={c.img} alt={c.alt ?? c.title} width={900} height={600} className="h-64 w-full object-cover" />
                   <div className="p-6 text-center">
@@ -228,9 +245,10 @@ export default function FaceOfBeanYouPage() {
                     {c.video && (
                       <button
                         onClick={() => {
-                          const yt = isYouTubeUrl(c.video as string);
+                          if (!c.video) return;
+                          const yt = isYouTubeUrl(c.video);
                           setIsYT(yt);
-                          setVideoUrl(yt ? toYouTubeEmbed(c.video as string) : (c.video as string));
+                          setVideoUrl(yt ? toYouTubeEmbed(c.video) : c.video);
                           setLightboxOpen(true);
                         }}
                         className="mt-4 rounded-full bg-orange-600 px-4 py-2 text-white transition hover:bg-orange-700"
@@ -244,7 +262,7 @@ export default function FaceOfBeanYouPage() {
             </div>
           </div>
 
-          {/* VIDEO LIGHTBOX — supports YouTube or mp4 */}
+          {/* VIDEO LIGHTBOX */}
           {lightboxOpen && (
             <div
               className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm"
@@ -289,12 +307,18 @@ export default function FaceOfBeanYouPage() {
 
         {/* CONTACT */}
         <section id="contact" className="relative overflow-hidden bg-[#fcd5ce] px-6 py-24 text-[#4e342e]">
-          <div className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl"
-               style={{ backgroundColor: "#fecaca" }} />
-          <div className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl"
-               style={{ backgroundColor: "#c2410c" }} />
-          <div className="pointer-events-none absolute inset-0 opacity-10"
-               style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div
+            className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl"
+            style={{ backgroundColor: "#fecaca" }}
+          />
+          <div
+            className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl"
+            style={{ backgroundColor: "#c2410c" }}
+          />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-10"
+            style={{ backgroundImage: "url(/images/texture.png)" }}
+          />
           <div className="relative z-10 mx-auto max-w-xl text-center">
             <h2 className="mb-4 text-4xl font-bold">📬 Let’s Brew Something</h2>
             <p className="mb-6">Collab, connect, or just say hi — we’re building this tribe together.</p>
