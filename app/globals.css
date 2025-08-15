@@ -1,0 +1,115 @@
+/* === Tailwind v4 base import === */
+@import "tailwindcss";
+
+/* === Custom theme tokens (Tailwind v4 @theme syntax) === */
+@theme {
+  /* Brand Colors */
+  --color-brand-orange: #BD570F;
+  --color-brand-deep: #3C2100;
+  --color-brand-accent: #C85A17;
+
+  /* Radii */
+  --radius-xl: 1rem;
+
+  /* You can also add fonts here if desired */
+}
+
+/* === Base styles === */
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  @apply text-white;
+  background-color: var(--color-brand-orange);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, 
+    "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", 
+    "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* === Utilities === */
+
+/* Glass card styling */
+.glass-card {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+/* Header scrolled state */
+.scrolled-header {
+  @apply bg-orange-600 shadow-md;
+}
+/* Poppins (optional if you already load it elsewhere) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+:root {
+  --brown: #4e342e;
+}
+body { color: var(--brown); }
+
+/* Floating blob animation */
+@keyframes floatBlob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+.floating-blob { animation: floatBlob 8s ease-in-out infinite; opacity: .08; z-index: 0; }
+
+/* Paper-ish texture overlay */
+.texture-overlay {
+  background-image: url('https://www.transparenttextures.com/patterns/white-wall.png');
+  mix-blend-mode: multiply;
+  opacity: .04;
+  pointer-events: none;
+}
+
+/* Hero / section cuts */
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 0, 100% 94%, 0% 100%);
+}
+@media (max-width: 768px) {
+  .clip-diagonal { clip-path: polygon(0 0, 100% 0, 100% 98%, 0% 100%); }
+}
+
+/* Card mask hover */
+.card-mask {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
+  transition: clip-path .4s ease, transform .4s ease;
+}
+.card-mask:hover {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  transform: scale(1.02);
+}
+
+/* Hero image mask */
+.hero-img-mask {
+  clip-path: polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%);
+  transition: all .5s ease;
+}
+.hero-img-mask:hover {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  transform: scale(1.02);
+}
+/* Responsive image handling */
+.responsive-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  transition: transform .3s ease;
+}
+.responsive-img:hover {
+  transform: scale(1.05);
+}
