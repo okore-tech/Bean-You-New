@@ -169,7 +169,7 @@ export default function HomePage() {
             />
           </div>
           <div className="md:w-1/2 space-y-6" data-aos="fade-left">
-            <h2 className="text-3xl md:text-4xl font-bold">Identify Your Interests</h2>
+            <h2 className="text-3xl md:text-4xl font-bold extrabold text-yellow-300">Identify Your Interests</h2>
             <p className="text-orange-100 text-lg">
               Bean You is about giving people a space to learn, trade, and invest. Choose your interests and we’ll help
               you discover communities that match.
