@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import RoadmapSection from "@/components/RoadmapSection";
@@ -13,9 +13,7 @@ import RoadmapSection from "@/components/RoadmapSection";
 function useEnterAnimation() {
   const rootRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
-    // Always start at top so hero is visible on route/reload
     window.scrollTo({ top: 0 });
-
     const root = rootRef.current;
     if (!root) return;
 
@@ -26,17 +24,81 @@ function useEnterAnimation() {
       els.forEach((el) => el.classList.add("entered"));
       return;
     }
-
     els.forEach((el) => el.classList.add("enter"));
     els.forEach((el, i) => {
       const delay = Number(el.dataset.delay ?? i * 80);
       const t = window.setTimeout(() => el.classList.add("entered"), delay);
-      // cleanup per element timeout if needed
       return () => window.clearTimeout(t);
     });
   }, []);
 
   return rootRef;
+}
+
+/* --------------------------------
+   Shared deep-link helper (app UX)
+   -------------------------------- */
+function useAppRedirect() {
+  return () => {
+    if (typeof window === "undefined") return;
+    const ua = navigator.userAgent || (navigator as any).vendor || (window as any).opera;
+    try { localStorage.setItem("cupTooltipSeen", "1"); } catch {}
+    if (/android/i.test(ua)) {
+      window.location.href = "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB";
+      return;
+    }
+    if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) {
+      window.location.href = "https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2";
+      return;
+    }
+    alert("On mobile? Tap to open your app store. Otherwise, use the QR code below to install the app.");
+  };
+}
+
+/* ----------------------
+   Small inline cup (mobile)
+   ---------------------- */
+function AppCupInline({ size = 28 }: { size?: number }) {
+  const redirectToApp = useAppRedirect();
+  const [ripples, setRipples] = useState<{ id: number }[]>([]);
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setRipples((r) => [...r, { id: Date.now() }]);
+        setTimeout(() => setRipples((r) => r.slice(1)), 520);
+        redirectToApp();
+      }}
+      className="relative md:hidden shrink-0 ml-2 rounded-full outline-none focus:ring-2 focus:ring-yellow-300"
+      aria-label="Install the Bean You app"
+    >
+      {/* ripple */}
+      <div className="pointer-events-none absolute inset-0">
+        {ripples.map((r) => (
+          <span
+            key={r.id}
+            className="absolute left-1/2 top-1/2 block w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60 blur-[0.5px] animate-cupRipple"
+          />
+        ))}
+      </div>
+      <Image
+        src="/images/coffee-cup.png"
+        alt="App cup"
+        width={size}
+        height={size}
+        className="object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.35)]"
+        priority
+      />
+      <style >{`
+        @keyframes cupRipple {
+          0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.6; }
+          100% { transform: translate(-50%, -50%) scale(2.0); opacity: 0; }
+        }
+        .animate-cupRipple { animation: cupRipple 0.52s ease-out forwards; }
+      `}</style>
+    </button>
+  );
 }
 
 /* -------------
@@ -56,9 +118,11 @@ function Hero() {
         <h1
           data-enter
           data-delay="0"
-          className="enter:opacity-0 enter:translate-y-3 entered:opacity-100 entered:translate-y-0 transition-all duration-700 text-4xl/[1.1] md:text-6xl/[1.05] font-extrabold text-white tracking-tight"
+          className="enter:opacity-0 enter:translate-y-3 entered:opacity-100 entered:translate-y-0 transition-all duration-700 text-4xl/[1.1] md:text-6xl/[1.05] font-extrabold tracking-tight"
         >
-          Find your Tribe
+          <span className="block text-3xl md:text-6xl text-orange-400">It&apos;s not just</span>
+          <span className="block text-5xl md:text-[6.5rem] leading-none text-black">coffee,</span>
+          <span className="block text-lg md:text-2xl text-yellow-300 mt-2">it&apos;s an expression of yourself.</span>
         </h1>
 
         <p
@@ -73,7 +137,7 @@ function Hero() {
         <div
           data-enter
           data-delay="220"
-          className="enter:opacity-0 enter:translate-y-3 entered:opacity-100 entered:translate-y-0 transition-all duration-700"
+          className="enter:opacity-0 enter:translate-y-3 entered:opacity-100 entered:translate-y-0 transition-all duration-700 flex items-center"
         >
           <Link
             href="/explore"
@@ -84,12 +148,13 @@ function Hero() {
             </svg>
             <span>Start Exploring</span>
           </Link>
+          {/* mini cup next to CTA (mobile only) */}
+          <AppCupInline />
         </div>
       </div>
 
       {/* RIGHT: gradient panel + image */}
       <div className="relative w-full md:w-1/2 flex items-end md:items-center justify-center min-h-[44svh] md:min-h-[560px]">
-        {/* angled gradient: shorter on mobile so CTA fits on one screen */}
         <div className="absolute inset-x-0 bottom-0 md:inset-0 h-[46svh] md:h-full pointer-events-none">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
             <defs>
@@ -102,7 +167,6 @@ function Hero() {
           </svg>
         </div>
 
-        {/* image: contained on desktop, fuller on mobile */}
         <div
           data-enter
           data-delay="320"
@@ -119,8 +183,7 @@ function Hero() {
         </div>
       </div>
 
-      {/* local utility styles for enter/entered */}
-      <style jsx>{`
+      <style>{`
         .enter\\:opacity-0.enter { opacity: 0; }
         .enter\\:translate-y-3.enter { transform: translateY(12px); }
         .entered\\:opacity-100.entered { opacity: 1; }
@@ -130,38 +193,139 @@ function Hero() {
   );
 }
 
+/* ----------------------
+   Site-wide interactive cup (desktop/tablet)
+   - shakes when Roadmap enters view
+   ---------------------- */
+function CupOverlay() {
+  const redirectToApp = useAppRedirect();
+  const [ripples, setRipples] = useState<{ id: number }[]>([]);
+  const [yOffset, setYOffset] = useState(0);
+  const [shake, setShake] = useState(false);
+
+  // subtle parallax on scroll
+  useEffect(() => {
+    const onScroll = () => {
+      const s = window.scrollY;
+      setYOffset(Math.min(12, s * 0.02)); // clamp to 12px
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // shake when Roadmap enters viewport
+  useEffect(() => {
+    const target = document.getElementById("roadmap-anchor");
+    if (!target) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setShake(true);
+            const t = setTimeout(() => setShake(false), 900);
+            return () => clearTimeout(t);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    io.observe(target);
+    return () => io.disconnect();
+  }, []);
+
+  const handleClick = () => {
+    setRipples((arr) => [...arr, { id: Date.now() }]);
+    setTimeout(() => setRipples((arr) => arr.slice(1)), 550);
+    redirectToApp();
+  };
+
+  const onKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
+  return (
+    <div
+      className="hidden md:block fixed z-[60] bottom-6 right-4 md:right-10 select-none"
+      style={{ transform: `translateY(-${yOffset}px)` }}
+    >
+      <div
+        className={`relative w-16 h-16 md:w-40 md:h-40 cursor-pointer ${shake ? "animate-cupShake" : "animate-cupFloat"}`}
+        role="button"
+        aria-label="Open app store to install Bean You"
+        tabIndex={0}
+        onClick={handleClick}
+        onKeyDown={onKey}
+      >
+        {/* ripples */}
+        <div className="pointer-events-none absolute inset-0">
+          {ripples.map((r) => (
+            <span
+              key={r.id}
+              className="absolute left-1/2 top-1/2 block w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60 blur-[1px] animate-cupRipple"
+            />
+          ))}
+        </div>
+
+        {/* shadow blob */}
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-28 h-8 md:w-44 md:h-10 rounded-full bg-black/25 blur-xl animate-shadowPulse" />
+
+        {/* cup image */}
+        <Image src="/coffee-cup.png" alt="Bean You coffee cup" fill className="object-contain" priority />
+      </div>
+
+      <style jsx>{`
+        @keyframes cupFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes cupRipple { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; } }
+        @keyframes shadowPulse { 0%, 100% { transform: translateX(-50%) scale(0.95, 0.8); opacity: 0.55; } 50% { transform: translateX(-50%) scale(1.08, 0.9); opacity: 0.75; } }
+        @keyframes cupShake {
+          0% { transform: translateY(0) rotate(0deg); }
+          20% { transform: translateY(-2px) rotate(-6deg); }
+          40% { transform: translateY(0) rotate(4deg); }
+          60% { transform: translateY(-1px) rotate(-3deg); }
+          80% { transform: translateY(0) rotate(2deg); }
+          100% { transform: translateY(0) rotate(0deg); }
+        }
+        .animate-cupRipple { animation: cupRipple 0.55s ease-out forwards; }
+        .animate-shadowPulse { animation: shadowPulse 2.8s ease-in-out infinite; }
+        .animate-cupFloat { animation: cupFloat 4.8s ease-in-out infinite; }
+        .animate-cupShake { animation: cupShake 0.9s ease-in-out 1; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .animate-cupRipple,
+          .animate-shadowPulse,
+          .animate-cupFloat,
+          .animate-cupShake {
+            animation: none !important;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export default function HomePage() {
   useEffect(() => {
     AOS.init({ once: true });
   }, []);
 
-  const redirectToApp = () => {
-    if (typeof window === "undefined") return;
-    const userAgent =
-      navigator.userAgent || (navigator as any).vendor || (window as any).opera;
-
-    if (/android/i.test(userAgent)) {
-      window.location.href =
-        "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB";
-    } else if (/iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream) {
-      window.location.href =
-        "https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2";
-    } else {
-      alert("Please scan the QR code with your phone to download the app.");
-    }
-  };
-
   return (
     <main>
-      {/* HERO (new) */}
+      {/* HERO */}
       <Hero />
+
+      {/* site-wide cup overlay (desktop/tablet) */}
+      <CupOverlay />
 
       {/* IDENTIFY YOUR INTERESTS */}
       <section className="bg-brand-deep py-20 px-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2" data-aos="fade-right">
             <Image
-              src="/images/interests.jpg"  // ✅ fixed path
+              src="/images/interests.jpg"
               alt="Identify Interests"
               width={1200}
               height={800}
@@ -174,18 +338,24 @@ export default function HomePage() {
               Bean You is about giving people a space to learn, trade, and invest. Choose your interests and we’ll help
               you discover communities that match.
             </p>
-            <Link
-              href="/connect"
-              className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-lg hover:scale-105 transition-transform duration-300"
-            >
-              Get Started
-            </Link>
+            <div className="flex items-center">
+              <Link
+                href="/connect"
+                className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-lg hover:scale-105 transition-transform duration-300"
+              >
+                Get Started
+              </Link>
+              {/* mini cup next to CTA (mobile only) */}
+              <AppCupInline />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ROADMAP + VALUE/PROFIT CAROUSEL */}
-      <RoadmapSection />
+      {/* ROADMAP (wrap with anchor for shake trigger) */}
+      <div id="roadmap-anchor">
+        <RoadmapSection />
+      </div>
 
       {/* COMMUNITY */}
       <section id="community" className="py-20 bg-brand-deep text-white">
@@ -204,21 +374,19 @@ export default function HomePage() {
             <p className="text-orange-100 text-lg mb-6">
               Let’s brew great communities together. Connect with like-minded people and access exclusive opportunities.
             </p>
-            <Link
-              href="/social"
-              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-lg hover:scale-105 transition-transform duration-300"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="flex items-center">
+              <Link
+                href="/social"
+                className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-lg hover:scale-105 transition-transform duration-300"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              Join Now
-            </Link>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                Join Now
+              </Link>
+              {/* mini cup next to CTA (mobile only) */}
+              <AppCupInline />
+            </div>
           </div>
         </div>
       </section>

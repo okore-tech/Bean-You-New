@@ -46,7 +46,7 @@ export default function RoadmapSection() {
       titleEyebrow: 'Coffee Lover',
       title: 'Brewed to Your Taste',
       body:
-        'Connect to the farm behind your favorite brew and be part of its journey — from seed to sip, rooted in sustainability.',
+        'Connect to the farm behind your favorite brew and be part of its journey — from seed to your heart, rooted in sustainability.',
       cta: { label: 'Get to Farm', href: 'https://asiliestates.co.ke', external: true },
       bg: 'primary',
     },
