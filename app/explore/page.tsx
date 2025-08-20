@@ -10,7 +10,7 @@ export default function ExplorePage() {
       title: "Recognise Who You Are",
       text:
         "Download the Bean You® App and share your values by simple text, a 60‑sec voice note, or a 30‑sec selfie video. Our AI will do the rest.",
-      img: "/images/explore/step-1-identity.jpg",
+      img: "/images/explore1.jpg",
       ctas: [
         {
           label: "Download (Android)",
@@ -28,7 +28,7 @@ export default function ExplorePage() {
       title: "Get Free, Values‑Aligned Connections",
       text:
         "Bean You® offers free connections to people who share your values — your tribe. Get solutions aligned to your values: online education, mobile gaming, and AI helpers.",
-      img: "/images/values.png",
+      img: "/images/gifts.png",
       ctas: [{ label: "Go to Connect", href: "/connect" }],
     },
     {
@@ -37,7 +37,7 @@ export default function ExplorePage() {
       text:
         "We’re rolling out 10,000 Bean You® coffee cafés worldwide. Enjoy a free cup on us, meet your tribe — and the more you show up together, the bigger the discounts.",
       img: "/images/cafe01.png",
-      ctas: [{ label: "See Café Gallery", href: "/cafes" }], // point this to your gallery when ready
+      // point this to your gallery when ready
     },
     {
       n: "4",
@@ -45,14 +45,14 @@ export default function ExplorePage() {
       text:
         "Bean You® Points reward good ESG behaviour — helping others, walking more, living healthy, and sustainability actions. Redeem for gifts, discounts, and diploma credits with aligned retailers.",
       img: "/images/gifts.png",
-      ctas: [{ label: "How Points Work", href: "/rewards" }], // optional detail page
+      
     },
     {
       n: "5",
       title: "Connect to the Farm Behind Your Coffee",
       text:
         "Adopt as little as one coffee crop, monitor its growth, talk to the farmer, tip them, and support a not‑for‑profit foundation — from as little as US$3.8 one‑off.",
-      img: "/images/explore/step-5-farm.jpg",
+      img: "/images/kahirofarm.webp",
       ctas: [
         {
           label: "Adopt on the 1m² Platform",
@@ -185,39 +185,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      {/* MINI GALLERY / SOCIAL PROOF */}
-      <section className="relative py-16 bg-[#1b0d08] text-white">
-        <div className="absolute inset-0 opacity-[0.06]" aria-hidden>
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 20% 20%, rgba(255,255,255,.6) 0, transparent 40%), radial-gradient(circle at 80% 50%, rgba(255,255,255,.5) 0, transparent 45%)",
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-6xl mx-auto px-4">
-          <h3 className="text-center text-2xl md:text-3xl font-extrabold">
-            Learn • Play • Meet • Grow
-          </h3>
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              "/images/cafe2.png",
-              "/images/cafe3.png",
-              "/images/cafe1.png",
-             
-            ].map((src) => (
-              <div
-                key={src}
-                className="relative h-28 md:h-36 rounded-2xl overflow-hidden border border-white/10 bg-white/5"
-              >
-                <Image src={src} alt="Explore gallery" fill className="object-cover" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* FINAL CTA */}
       <section className="relative py-16 bg-gradient-to-tr from-[#2a150e] via-[#793A17] to-[#F3B019] text-white">

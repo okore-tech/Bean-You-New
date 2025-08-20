@@ -58,7 +58,7 @@ export default function FaceOfBeanYouPage() {
           cta: "🎥 Watch Video",
         },
         {
-          img: "/images/Rock and Roll.png",
+          img: "/images/band.png",
           title: "Gen-z • Band",
           desc: "Expression through music.",
           video: "https://youtu.be/SQxvFfcRKlc",
@@ -93,8 +93,7 @@ export default function FaceOfBeanYouPage() {
           img: "/images/Vivian.jpg",
           title: "You? • Culture Crafter",
           desc: "Pitch your story. Build with us.",
-          video: "https://youtu.be/3JZ_D3ELwOQ",
-          cta: "🎥 Watch Story",
+          
         },
       ],
     }),

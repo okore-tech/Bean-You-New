@@ -10,8 +10,10 @@ const nav = [
   { href: "/face-of-bean-you", label: "Face of Bean You" },
   { href: "/explore", label: "Explore" },
   { href: "/connect", label: "Connect" },
+  { href: "/roadmap", label: "Roadmap" },
   { href: "/about", label: "About Us" },
   { href: "/social", label: "Social Media" },
+  
 ];
 
 export default function Header() {
