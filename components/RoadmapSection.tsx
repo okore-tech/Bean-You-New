@@ -38,16 +38,11 @@ function Press3DButton(
     <a
       {...rest}
       className={[
-        // base
         'relative inline-flex items-center justify-center rounded-full px-5 py-2.5',
         'font-semibold text-black select-none',
-        // gradient face
         'bg-gradient-to-r from-yellow-400 to-orange-500',
-        // raised base shadow + subtle inner sheen
         'shadow-[0_8px_20px_rgba(0,0,0,0.25)] ring-1 ring-black/5',
-        // hover lift
         'transition-transform duration-150 ease-out hover:scale-[1.02]',
-        // pressed down
         'active:translate-y-[2px] active:shadow-[0_4px_12px_rgba(0,0,0,0.28)]',
         className,
       ].join(' ')}
@@ -70,15 +65,15 @@ function useAppRedirect() {
         'https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2';
       return;
     }
-    // Fallback (shouldn’t hit on mobile since mobile check gates this)
     alert('Scan the QR code on desktop to get the app.');
   };
 }
 
-/* Modal for desktop QR */
+/* Modal for desktop QR (unchanged style, now with QR switch + store badges) */
 function QrModal({
   open,
   onClose,
+  // Optional: a generic single QR if you want; we’ll still allow switching below
   qrSrc = '/images/bean-you-qr.png',
 }: {
   open: boolean;
@@ -86,12 +81,21 @@ function QrModal({
   qrSrc?: string;
 }) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const [qrType, setQrType] = useState<'ios' | 'android'>('ios');
+
+  // Provide per-store QR images. Replace with your real files.
+  const IOS_QR = '/images/bean-you-ios-qr.png';
+  const ANDROID_QR = '/images/bean-you-android-qr.png';
+
+  // Store URLs
+  const IOS_URL =
+    'https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2';
+  const ANDROID_URL =
+    'https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB';
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
     const id = window.setTimeout(() => {
       dialogRef.current?.querySelector<HTMLButtonElement>('button[data-close]')?.focus();
@@ -103,16 +107,16 @@ function QrModal({
   }, [open, onClose]);
 
   const handleShare = async () => {
-    const shareData = {
-      title: 'Bean You — Get the app',
-      text: 'Scan this QR to install the Bean You app.',
-      url: typeof window !== 'undefined' ? window.location.href : undefined,
-    };
+    const url = typeof window !== 'undefined' ? window.location.href : '';
     try {
-      if (navigator.share) {
-        await navigator.share(shareData as any);
+      if (typeof (navigator as any).share === 'function') {
+        await (navigator as any).share({
+          title: 'Bean You — Get the app',
+          text: 'Scan this QR to install the Bean You app.',
+          url,
+        });
       } else {
-        await navigator.clipboard.writeText(shareData.url || '');
+        await navigator.clipboard.writeText(url);
         alert('Link copied to clipboard!');
       }
     } catch {
@@ -121,16 +125,16 @@ function QrModal({
   };
 
   if (!open) return null;
+
+  // Decide which QR to render: prefer per-store QRs; fallback to single generic qrSrc
+  const currentQr =
+    (qrType === 'ios' ? IOS_QR : ANDROID_QR) || qrSrc;
+
   return (
-    <div
-      aria-hidden={!open}
-      className="fixed inset-0 z-[80] flex items-center justify-center p-4"
-    >
+    <div aria-hidden={!open} className="fixed inset-0 z-[80] flex items-center justify-center p-4">
       {/* overlay */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
       {/* dialog */}
       <div
         ref={dialogRef}
@@ -140,7 +144,9 @@ function QrModal({
         className="relative z-10 w-full max-w-md rounded-2xl bg-[#3C2100] text-white shadow-2xl ring-1 ring-white/10"
       >
         <div className="flex items-start justify-between p-4 sm:p-5">
-          <h3 className="text-lg font-bold">Get the app</h3>
+          <h3 className="text-lg font-bold">
+            Get the app ({qrType === 'ios' ? 'App Store' : 'Google Play'})
+          </h3>
           <button
             data-close
             onClick={onClose}
@@ -158,16 +164,16 @@ function QrModal({
 
         <div className="px-4 sm:px-5">
           <p className="text-sm text-amber-100/90">
-            Scan this QR with your phone camera to install the Bean You app.
-            You can also download or share the QR.
+            Scan this QR with your phone camera to install the Bean You app. You can also download or share the QR, or switch between stores.
           </p>
         </div>
 
         <div className="p-4 sm:p-5">
+          {/* QR */}
           <div className="mx-auto w-56 h-56 sm:w-64 sm:h-64 rounded-xl bg-white p-3 shadow-inner flex items-center justify-center">
             <Image
-              src={qrSrc}
-              alt="Bean You app QR code"
+              src={currentQr}
+              alt={qrType === 'ios' ? 'App Store QR' : 'Google Play QR'}
               width={512}
               height={512}
               className="object-contain rounded-md"
@@ -175,26 +181,74 @@ function QrModal({
             />
           </div>
 
-          <div className="mt-4 flex flex-col sm:flex-row gap-3">
-            <Press3DButton
-              href={qrSrc}
-              download
-              className="w-full sm:w-auto justify-center"
-            >
-              Download QR
-            </Press3DButton>
+{/* Toggle store QR */}
+<div className="mt-4 flex gap-3 justify-center flex-wrap">
+  <Press3DButton
+    href="#"
+    onClick={(e) => { e.preventDefault(); setQrType('ios'); }}
+    className={qrType === 'ios' ? '' : 'opacity-90'}
+  >
+    App Store QR
+  </Press3DButton>
+  <Press3DButton
+    href="#"
+    onClick={(e) => { e.preventDefault(); setQrType('android'); }}
+    className={qrType === 'android' ? '' : 'opacity-90'}
+  >
+    Play Store QR
+  </Press3DButton>
+</div>
 
-            <Press3DButton
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleShare();
-              }}
-              className="w-full sm:w-auto justify-center"
-            >
-              Share / Copy Link
-            </Press3DButton>
-          </div>
+{/* Actions */}
+<div className="mt-4 flex flex-col items-center gap-3">
+  <a
+    href={currentQr}
+    download
+    className="w-full sm:w-2/3 text-center relative inline-flex items-center justify-center rounded-full px-5 py-2.5 font-semibold text-black select-none bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_8px_20px_rgba(0,0,0,0.25)] ring-1 ring-black/5 transition-transform duration-150 ease-out hover:scale-[1.02] active:translate-y-[2px] active:shadow-[0_4px_12px_rgba(0,0,0,0.28)]"
+  >
+    Download QR
+  </a>
+  <a
+    href="#"
+    onClick={(e) => { e.preventDefault(); handleShare(); }}
+    className="w-full sm:w-2/3 text-center relative inline-flex items-center justify-center rounded-full px-5 py-2.5 font-semibold text-black select-none bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_8px_20px_rgba(0,0,0,0.25)] ring-1 ring-black/5 transition-transform duration-150 ease-out hover:scale-[1.02] active:translate-y-[2px] active:shadow-[0_4px_12px_rgba(0,0,0,0.28)]"
+  >
+    Share / Copy Link
+  </a>
+</div>
+
+{/* Store badges */}
+<div className="mt-6 flex justify-center gap-4 flex-wrap">
+  <a
+    href={IOS_URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300"
+  >
+    <Image
+      src="/images/app-store-badge.svg"
+      alt="Download on the App Store"
+      width={160}
+      height={48}
+      className="h-10 w-auto object-contain"
+    />
+  </a>
+  <a
+    href={ANDROID_URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300"
+  >
+    <Image
+      src="/images/google-play-badge.png"
+      alt="Get it on Google Play"
+      width={180}
+      height={54}
+      className="h-10 w-auto object-contain"
+    />
+  </a>
+</div>
+
 
           <div className="mt-3 text-xs text-amber-200/80">
             Tip: Save the QR to your photos and share it with friends.
@@ -218,7 +272,7 @@ export default function RoadmapSection() {
   const isMobile = useIsMobile();
   const redirectToApp = useAppRedirect();
 
-  // Smart CTA for the "Get to App" row: on mobile -> redirect; desktop -> open modal.
+  // Smart CTA: mobile -> redirect; desktop -> open modal
   const [qrOpen, setQrOpen] = useState(false);
   const handleSmartGetApp = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -267,12 +321,10 @@ export default function RoadmapSection() {
         title: 'Community Governance',
         body:
           'Ethically approved organizations, café reviews, and access to groups with similar ESG values.',
-        // smart CTA: binds to modal/redirect
         cta: { label: 'Get to App', href: '#', onClick: handleSmartGetApp },
         bg: 'primary',
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isMobile]
   );
 
@@ -289,7 +341,7 @@ export default function RoadmapSection() {
       </div>
 
       {/* Desktop QR modal */}
-      <QrModal open={qrOpen} onClose={() => setQrOpen(false)} qrSrc="/images/bean-you-qr.png" />
+      {!isMobile && <QrModal open={qrOpen} onClose={() => setQrOpen(false)} qrSrc="/images/bean-you-qr.png" />}
     </section>
   );
 }
@@ -298,22 +350,24 @@ function Row({ item, reverse }: { item: Item; reverse?: boolean }) {
   const imageRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('is-visible');
-        });
-      },
-      { threshold: 0.2 }
-    );
-    if (imageRef.current) io.observe(imageRef.current);
-    if (textRef.current) io.observe(textRef.current);
-    return () => io.disconnect();
-  }, []);
+useEffect(() => {
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).classList.add('is-visible');
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+  if (imageRef.current) io.observe(imageRef.current);
+  if (textRef.current) io.observe(textRef.current);
+  return () => io.disconnect();
+}, []);
 
-  const bgClass =
-    item.bg === 'primary' ? 'bg-[#BD570F]' : 'bg-[#C85A17]';
+
+  const bgClass = item.bg === 'primary' ? 'bg-[#BD570F]' : 'bg-[#C85A17]';
 
   return (
     <div
@@ -379,22 +433,10 @@ function Row({ item, reverse }: { item: Item; reverse?: boolean }) {
       </div>
 
       <style jsx>{`
-        .reveal {
-          opacity: 0;
-          transform: translateY(16px);
-        }
-        .reveal.is-visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        .md\\:direction-rtl {
-          direction: rtl;
-        }
-        @media (min-width: 768px) {
-          .md\\:direction-rtl > * {
-            direction: ltr;
-          }
-        }
+        .reveal { opacity: 0; transform: translateY(16px); }
+        .reveal.is-visible { opacity: 1; transform: translateY(0); }
+        .md\\:direction-rtl { direction: rtl; }
+        @media (min-width: 768px) { .md\\:direction-rtl > * { direction: ltr; } }
       `}</style>
     </div>
   );

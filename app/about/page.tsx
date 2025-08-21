@@ -47,9 +47,10 @@ export default function AboutPage() {
   ];
 
   const internationalPartners = [
-    { name: "AITEA Partner 1", img: "/images/intl1.png", desc: "Global 4IR collaborator." },
-    { name: "AITEA Partner 2", img: "/images/intl2.png", desc: "AI / Web3 specialist." },
-    { name: "AITEA Partner 3", img: "/images/intl3.png", desc: "Blockchain & ESG tooling." },
+    { name: "CCEG Blockchain UN lab", img: "/images/partnerblockchain.png", desc: "Global 4IR collaborator." },
+    { name: "AITEA ", img: "/images/hovername.png", desc: "AI / Web3 specialist." },
+    { name: "MiValues", img: "/images/mivalues.jpg", desc: "Blockchain & ESG tooling." },
+     { name: "MiMeta", img: "/images/mimeta.jpg", desc: "Blockchain & ESG tooling." },
   ];
 
   return (

@@ -2,237 +2,482 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+/* ─────────────────────────────────────────────
+   Tiny helpers (no deps)
+────────────────────────────────────────────── */
+function isProbablyMobile(): boolean {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent || (navigator as any).vendor || (window as any).opera;
+  const byUA = /android|iphone|ipad|ipod|iemobile|blackberry|bb10|mini|mobile|mobi/i.test(ua);
+  const byUAData = (navigator as any).userAgentData?.mobile === true;
+  const byHeuristics =
+    ("ontouchstart" in window || (navigator as any).maxTouchPoints > 1) &&
+    window.matchMedia?.("(pointer: coarse)")?.matches &&
+    window.innerWidth <= 1024;
+  return Boolean(byUA || byUAData || byHeuristics);
+}
+
+function redirectToStore(): boolean {
+  if (typeof window === "undefined") return false;
+  const IOS = "https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2";
+  const ANDROID = "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB";
+  const ua = navigator.userAgent || (navigator as any).vendor || (window as any).opera;
+
+  if (/android/i.test(ua)) { window.location.href = ANDROID; return true; }
+  if (/iPad|iPhone|iPod/i.test(ua) && !(window as any).MSStream) { window.location.href = IOS; return true; }
+  if (isProbablyMobile()) {
+    window.location.href = /Macintosh|iPhone|iPad|iPod/i.test(ua) ? IOS : ANDROID;
+    return true;
+  }
+  return false;
+}
+
+/* ─────────────────────────────────────────────
+   3D Button
+────────────────────────────────────────────── */
+function Press3DButton(
+  props: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }
+) {
+  const { className = "", children, ...rest } = props;
+  return (
+    <a
+      {...rest}
+      className={[
+        "relative inline-flex items-center justify-center rounded-full px-5 py-2.5",
+        "font-semibold text-black select-none",
+        "bg-gradient-to-r from-yellow-300 to-orange-400",
+        "shadow-[0_10px_24px_rgba(0,0,0,0.28)] ring-1 ring-black/5",
+        "transition-transform duration-150 ease-out hover:scale-[1.03]",
+        "active:translate-y-[2px] active:shadow-[0_6px_16px_rgba(0,0,0,0.32)]",
+        className,
+      ].join(" ")}
+    >
+      {children}
+    </a>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Desktop QR Modal
+────────────────────────────────────────────── */
+function QrModal({
+  open,
+  onClose,
+  qrSrc = "/images/bean-you-qr.png",
+}: {
+  open: boolean;
+  onClose: () => void;
+  qrSrc?: string;
+}) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    const id = window.setTimeout(() => {
+      dialogRef.current?.querySelector<HTMLButtonElement>("[data-close]")?.focus();
+    }, 0);
+    return () => { window.removeEventListener("keydown", onKey); window.clearTimeout(id); };
+  }, [open, onClose]);
+
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      if (typeof (navigator as any).share === "function") {
+        await (navigator as any).share({ title: "Bean You — Get the app", text: "Scan this QR to install the Bean You app.", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard!");
+      }
+    } catch {}
+  };
+
+  if (!open) return null;
+
+  const IOS_URL = "https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2";
+  const ANDROID_URL = "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB";
+
+  return (
+    <div aria-hidden={!open} className="fixed inset-0 z-[90] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Get the Bean You app"
+        className="relative z-10 w-full max-w-md rounded-2xl bg-[#3C2100] text-white shadow-2xl ring-1 ring-white/10"
+      >
+        <div className="flex items-start justify-between p-4 sm:p-5">
+          <h3 className="text-lg font-bold">Get the app</h3>
+          <button
+            data-close
+            onClick={onClose}
+            className="rounded-full p-2 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            aria-label="Close dialog"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 8.586l4.95-4.95 1.414 1.414L11.414 10l4.95 4.95-1.414 1.414L10 11.414l-4.95 4.95-1.414-1.414L8.586 10l-4.95-4.95L5.05 3.636z" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-4 sm:px-6 text-center">
+          <p className="text-sm text-amber-100/90">Scan this QR with your phone camera to install the Bean You app. You can also download, share, or use the badges below.</p>
+        </div>
+
+        <div className="p-4 sm:p-6">
+          <div className="mx-auto w-56 h-56 sm:w-64 sm:h-64 rounded-xl bg-white p-3 shadow-inner flex items-center justify-center">
+            <Image src={qrSrc} alt="Bean You app QR code" width={512} height={512} className="object-contain rounded-md" priority />
+          </div>
+
+          <div className="mt-5 flex flex-col items-center gap-3">
+            <Press3DButton href={qrSrc} download className="w-full sm:w-auto">Download QR</Press3DButton>
+            <Press3DButton href="#" onClick={(e) => { e.preventDefault(); handleShare(); }} className="w-full sm:w-auto">
+              Share / Copy Link
+            </Press3DButton>
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-3 max-w-xs mx-auto">
+            <a href={IOS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300" aria-label="Open in the Apple App Store">
+              <Image src="/images/app-store-badge.png" alt="Download on the App Store" width={160} height={48} className="h-10 w-auto object-contain" />
+            </a>
+            <a href={ANDROID_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300" aria-label="Get it on Google Play">
+              <Image src="/images/google-play-badge.png" alt="Get it on Google Play" width={180} height={54} className="h-10 w-auto object-contain" />
+            </a>
+          </div>
+
+          <p className="mt-3 text-center text-xs text-amber-200/80">Tip: Save the QR and share it with friends.</p>
+        </div>
+
+        <div className="p-4 sm:p-6">
+          <button onClick={onClose} className="w-full rounded-xl bg-white/10 hover:bg-white/15 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-300">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Page
+────────────────────────────────────────────── */
 export default function ExplorePage() {
-  const steps = [
-    {
-      n: "1",
-      title: "Recognise Who You Are",
-      text:
-        "Download the Bean You® App and share your values by simple text, a 60‑sec voice note, or a 30‑sec selfie video. Our AI will do the rest.",
-      img: "/images/explore1.jpg",
-      ctas: [
-        {
-          label: "Download (Android)",
-          href: "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB",
-        },
-        {
-          label: "Download (iOS)",
-          href:
-            "https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2",
-        },
-      ],
-    },
-    {
-      n: "2",
-      title: "Get Free, Values‑Aligned Connections",
-      text:
-        "Bean You® offers free connections to people who share your values — your tribe. Get solutions aligned to your values: online education, mobile gaming, and AI helpers.",
-      img: "/images/gifts.png",
-      ctas: [{ label: "Go to Connect", href: "/connect" }],
-    },
-    {
-      n: "3",
-      title: "Meet IRL in Our Cafés",
-      text:
-        "We’re rolling out 10,000 Bean You® coffee cafés worldwide. Enjoy a free cup on us, meet your tribe — and the more you show up together, the bigger the discounts.",
-      img: "/images/cafe01.png",
-      // point this to your gallery when ready
-    },
-    {
-      n: "4",
-      title: "Earn Points for Doing Good",
-      text:
-        "Bean You® Points reward good ESG behaviour — helping others, walking more, living healthy, and sustainability actions. Redeem for gifts, discounts, and diploma credits with aligned retailers.",
-      img: "/images/gifts.png",
-      
-    },
-    {
-      n: "5",
-      title: "Connect to the Farm Behind Your Coffee",
-      text:
-        "Adopt as little as one coffee crop, monitor its growth, talk to the farmer, tip them, and support a not‑for‑profit foundation — from as little as US$3.8 one‑off.",
-      img: "/images/kahirofarm.webp",
-      ctas: [
-        {
-          label: "Adopt on the 1m² Platform",
-          href: "https://parcels.beanyou.com/",
-        },
-      ],
-    },
-  ];
+  const [qrOpen, setQrOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+
+  // Smart get‑app: mobile → store, desktop → QR
+  const onGetApp = useCallback((e?: React.MouseEvent<HTMLAnchorElement>) => {
+    e?.preventDefault?.();
+    if (redirectToStore()) return;
+    setQrOpen(true);
+  }, []);
+
+  // Add CTA/Step types so TypeScript can narrow properties correctly
+  type StepCTA = {
+    label: string;
+    href?: string;
+    onClick?: (e?: React.MouseEvent<HTMLAnchorElement>) => void;
+  };
+
+  type Step = {
+    id: string;
+    n: string;
+    title: string;
+    text: string;
+    img: string;
+    ctas: StepCTA[];
+  };
+
+  // Steps with corrected CTAs
+  const steps = useMemo<Step[]>(
+    () => [
+      {
+        id: "step-1",
+        n: "1",
+        title: "Recognise Who You Are",
+        text: "Share your values by simple text, a 60‑sec voice note, or a 30‑sec selfie video. Our AI does the rest.",
+        img: "/images/explore1.jpg",
+        ctas: [{ label: "Get the app", onClick: onGetApp }],
+      },
+      {
+        id: "step-2",
+        n: "2",
+        title: "Find Your Tribe",
+        text: "We connect you to people and opportunities aligned to your values — education, gaming, and AI helpers.",
+        img: "/images/connect.jpg",
+        ctas: [{ label: "Connect", href: "/connect" }],
+      },
+      {
+        id: "step-3",
+        n: "3",
+        title: "Meet IRL in Our Cafés",
+        text: "We’re rolling out 10,000 cafés worldwide. Enjoy a free cup, meet your tribe, and grow together.",
+        img: "/images/cafe01.png",
+        ctas: [{ label: "Get the app", onClick: onGetApp }],
+      },
+      {
+        id: "step-4",
+        n: "4",
+        title: "Earn Points for Doing Good",
+        text: "Get rewarded for positive actions — helping others, moving more, living healthy, and sustainability.",
+        img: "/images/gifts.png",
+        ctas: [{ label: "Get the app", onClick: onGetApp }],
+      },
+      {
+        id: "step-5",
+        n: "5",
+        title: "Support the Farm Behind Your Coffee",
+        text: "Adopt a coffee crop from as little as US$3.8 one‑off, chat with the farmer, and follow the journey.",
+        img: "/images/kahirofarm.webp",
+        ctas: [{ label: "Adopt on the 1m² Platform", href: "https://parcels.beanyou.com/" }],
+      },
+    ],
+    [onGetApp]
+  );
+
+  // Observe active section
+  useEffect(() => {
+    const els = sectionRefs.current.filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const onScreen = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
+        if (onScreen[0]) {
+          const idx = Number(onScreen[0].target.getAttribute("data-idx"));
+          if (!Number.isNaN(idx)) setActive(idx);
+        }
+      },
+      { rootMargin: "-20% 0px -55% 0px", threshold: [0.1, 0.3, 0.6] }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [steps.length]);
+
+  // Reveals
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((en) => en.isIntersecting && en.target.classList.add("is-visible")),
+      { threshold: 0.15 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  // Jump handler
+  const jumpTo = (i: number) => {
+    sectionRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <main className="relative overflow-hidden">
+      {/* Sticky background with texture */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-br from-[#2a150e] via-[#793A17] to-[#F3B019]" />
+      <div aria-hidden className="fixed inset-0 -z-[9] [clip-path:polygon(0_0,100%_8%,100%_100%,0_92%)] bg-black/10" />
+      <div
+        aria-hidden
+        className="fixed inset-0 -z-[8] opacity-[0.06] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.35) 1px, transparent 1px)",
+          backgroundSize: "42px 42px",
+        }}
+      />
+
       {/* HERO */}
-      <section className="relative min-h-[60vh] grid place-items-center py-24">
-        {/* Coffee gradient + soft clip */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2a150e] via-[#793A17] to-[#F3B019] opacity-95" />
-        <div className="absolute inset-0 [clip-path:polygon(0_0,100%_7%,100%_100%,0_93%)] bg-black/10" />
-        {/* subtle texture overlay */}
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.07] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.35) 1px, transparent 1px)",
-            backgroundSize: "42px 42px",
-          }}
-        />
-
-        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow">
-            Explore Bean You
-          </h1>
-          <p className="mt-4 text-orange-50/95 text-lg md:text-xl leading-relaxed">
-            Our goal is to make your life better, and to make the planet better.
-            Connect IRL and online — at our cafés and through our free App — to
-            meet, collaborate, and create. Just five simple steps.
-          </p>
-          <a
-            href="#steps"
-            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
-          >
-            Start Exploring
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
-      </section>
-
-      {/* STEPS */}
-      <section
-        id="steps"
-        className="relative py-20 bg-gradient-to-b from-[#120805] via-[#2a150e] to-[#5f2c14] text-white scroll-mt-28"
-      >
-        {/* soft glows */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[420px] rounded-full bg-[#F3B019]/20 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 right-0 h-[360px] w-[360px] rounded-full bg-[#F97316]/20 blur-3xl" />
-
-        <div className="relative z-10 max-w-6xl mx-auto px-4">
-          {/* Desktop: 2-col alternating; Mobile: stacked with swipeable option */}
-          <div className="space-y-10 md:space-y-14">
-            {steps.map((s, i) => {
-              const even = i % 2 === 1;
-              return (
-                <article
-                  key={s.n}
-                  className={`grid items-center gap-6 md:gap-10 ${
-                    even ? "md:grid-cols-[1fr,1.1fr]" : "md:grid-cols-[1.1fr,1fr]"
-                  }`}
-                >
-                  {/* IMAGE */}
-                  <div
-                    className={`relative rounded-3xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_18px_54px_rgba(0,0,0,.35)] min-h-[240px] md:min-h-[320px] ${
-                      even ? "md:order-2" : ""
-                    }`}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/5" />
-                    <Image
-                      src={s.img}
-                      alt={s.title}
-                      fill
-                      className="object-cover"
-                      priority={i < 2}
-                    />
-                    {/* Big number badge, anchored inside so it never clips */}
-                    <div className="absolute top-4 left-4">
-                      <StepBadge n={s.n} />
-                    </div>
-                  </div>
-
-                  {/* TEXT */}
-                  <div className={`${even ? "md:order-1" : ""}`}>
-                    <h2 className="text-2xl md:text-3xl font-extrabold">{s.title}</h2>
-                    <p className="mt-3 text-orange-50/95 leading-relaxed">{s.text}</p>
-                    {s.ctas?.length ? (
-                      <div className="mt-5 flex flex-wrap gap-3">
-                        {s.ctas.map((c) => (
-                          <Link
-                            key={c.label}
-                            href={c.href}
-                            target={c.href.startsWith("http") ? "_blank" : "_self"}
-                            className="px-4 py-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
-                          >
-                            {c.label}
-                          </Link>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-
-          {/* Mobile helper: horizontal quick-scan strip of numbers (optional) */}
-          <div className="mt-10 md:mt-14 flex md:hidden items-center justify-center gap-2">
+      <section className="relative min-h-[62vh] grid place-items-center py-20 md:py-24 text-white">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          {/* PATH ABOVE SUBTITLE */}
+          <nav aria-label="Path" className="mx-auto mb-6 flex items-center justify-center gap-2 md:gap-3">
             {steps.map((s, i) => (
-              <span
-                key={s.n}
-                className="h-2.5 w-2.5 rounded-full bg-white/30"
-                aria-hidden
-              />
+              <button
+                key={s.id}
+                onClick={() => jumpTo(i)}
+                className={[
+                  "group relative grid place-items-center w-9 h-9 md:w-10 md:h-10 rounded-full ring-1 transition",
+                  i === active
+                    ? "bg-gradient-to-r from-yellow-300 to-orange-400 text-black ring-black/10 scale-105"
+                    : "bg-white/10 text-white ring-white/10 hover:bg-white/15",
+                ].join(" ")}
+                aria-label={`Jump to ${s.title}`}
+              >
+                <span className="text-[13px] md:text-sm font-bold">{s.n}</span>
+                <span
+                  className={[
+                    "pointer-events-none absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2",
+                    "px-2 py-1 rounded-lg bg-black/70 text-white text-xs whitespace-nowrap",
+                    "opacity-0 translate-y-[-4px] group-hover:opacity-100 group-hover:translate-y-0",
+                    "transition",
+                  ].join(" ")}
+                >
+                  {s.title}
+                </span>
+              </button>
             ))}
-          </div>
-        </div>
-      </section>
+          </nav>
 
-      
-
-      {/* FINAL CTA */}
-      <section className="relative py-16 bg-gradient-to-tr from-[#2a150e] via-[#793A17] to-[#F3B019] text-white">
-        <div className="absolute inset-0 [clip-path:polygon(0_0,100%_12%,100%_100%,0_88%)] bg-black/10" />
-        <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
-          <h3 className="text-3xl md:text-4xl font-extrabold drop-shadow">
-            Join the Movement
-          </h3>
-          <p className="mt-3 text-orange-50/95">
-            Connect to your tribe, support farmers, and earn rewards for doing good.
+          {/* Subheading */}
+          <p className="uppercase tracking-[0.2em] text-amber-200/90 text-sm md:text-base">
+            A journey in five sips
           </p>
+
+          {/* Title with ® */}
+          <h1 className="mt-3 text-4xl md:text-6xl font-extrabold drop-shadow">
+            Explore Bean{" "}
+            <span className="relative inline-flex">
+              You
+              <sup className="ml-0.5 text-xs align-top animate-r-pop">®</sup>
+            </span>
+          </h1>
+
+          <p className="mt-4 text-orange-50/95 text-lg md:text-xl leading-relaxed max-w-4xl mx-auto">
+            Find your tribe, do good, and share a coffee — online and in our cafés.
+          </p>
+
+          <div className="mt-8 flex justify-center">
+            <Press3DButton href="#path">Start Exploring</Press3DButton>
+          </div>
+        </div>
+      </section>
+
+      {/* PATH / STEPS (identical layout: text → image → CTAs) */}
+      <section id="path" className="relative text-white">
+        <div className="mx-auto max-w-6xl px-4 md:px-6 space-y-20 md:space-y-24">
+          {steps.map((s, i) => (
+            <section
+              key={s.id}
+              id={s.id}
+              ref={(el) => { sectionRefs.current[i] = el; }}
+              data-idx={i}
+              className="scroll-mt-28"
+            >
+              {/* TEXT */}
+              <div data-reveal className="reveal">
+                <div className="inline-flex items-center gap-2">
+                  <StepBadge n={s.n} />
+                  <span className="text-amber-200/90 font-semibold">Step {s.n}</span>
+                </div>
+                <h2 className="mt-3 text-2xl md:text-3xl font-extrabold">{s.title}</h2>
+                <p className="mt-3 text-orange-50/95 leading-relaxed">{s.text}</p>
+              </div>
+
+              {/* IMAGE (fixed aspect; not stretched) */}
+              <div
+                data-reveal
+                className="reveal mt-6 relative w-full aspect-[16/10] md:aspect-[21/9] max-h-[520px] rounded-3xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_18px_54px_rgba(0,0,0,.35)] group"
+              >
+                <Image
+                  src={s.img}
+                  alt={s.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  priority={i < 2}
+                />
+                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-transparent via-transparent to-white/10" />
+              </div>
+
+              {/* CTAs */}
+              {!!s.ctas.length && (
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {s.ctas.map((c) =>
+                    c.onClick ? (
+                      <Press3DButton key={c.label} href="#" onClick={c.onClick}>
+                        {c.label}
+                      </Press3DButton>
+                    ) : (
+                      <Link key={c.label} href={c.href!} className="inline-block">
+                        <Press3DButton>{c.label}</Press3DButton>
+                      </Link>
+                    )
+                  )}
+                </div>
+              )}
+            </section>
+          ))}
+        </div>
+      </section>
+
+      {/* MOBILE MINI-MAP (floating pill) */}
+      <nav
+        aria-label="Path (mobile)"
+        className="md:hidden fixed bottom-3 inset-x-0 z-[95] flex items-center justify-center"
+      >
+        <div className="mx-3 px-2 py-1.5 rounded-full bg-black/40 backdrop-blur supports-[backdrop-filter]:backdrop-blur-lg border border-white/10 shadow-lg">
+          <ul className="flex items-center gap-1.5">
+            {steps.map((s, i) => (
+              <li key={s.id}>
+                <button
+                  onClick={() => jumpTo(i)}
+                  className={[
+                    "grid place-items-center w-7 h-7 rounded-full ring-1 transition",
+                    i === active
+                      ? "bg-gradient-to-r from-yellow-300 to-orange-400 text-black ring-black/10 scale-105"
+                      : "bg-white/10 text-white ring-white/10 active:bg-white/20",
+                  ].join(" ")}
+                  aria-label={`Jump to ${s.title}`}
+                >
+                  <span className="text-[12px] font-bold">{s.n}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      {/* OUTRO */}
+      <section className="relative py-20 md:py-28 text-white">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h3 className="text-3xl md:text-4xl font-extrabold drop-shadow">Join the Movement</h3>
+          <p className="mt-3 text-orange-50/95">Connect to your tribe, support farmers, and earn rewards for doing good.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB"
-              target="_blank"
-              className="px-5 py-3 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
-            >
-              Get the App (Android)
-            </Link>
-            <Link
-              href="https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2"
-              target="_blank"
-              className="px-5 py-3 rounded-full bg-white/10 text-yellow-200 border border-white/20 hover:bg-white/15 transition"
-            >
-              Get the App (iOS)
-            </Link>
-            <Link
-              href="/connect"
-              className="px-5 py-3 rounded-full bg-white/10 text-yellow-200 border border-white/20 hover:bg-white/15 transition"
-            >
-              Explore Connect
+            <Link href="/connect" className="inline-block">
+              <Press3DButton>Explore Connect</Press3DButton>
             </Link>
           </div>
         </div>
       </section>
+
+      {/* Desktop QR modal for get‑app */}
+      {!isProbablyMobile() && <QrModal open={qrOpen} onClose={() => setQrOpen(false)} />}
+
+      {/* Local styles */}
+      <style>{`
+        html { scroll-behavior: smooth; }
+
+        .reveal { opacity: 0; transform: translateY(14px) scale(0.99); transition: opacity .6s ease, transform .6s ease; }
+        .reveal.is-visible { opacity: 1; transform: translateY(0) scale(1); }
+        @media (prefers-reduced-motion: reduce) {
+          .reveal, .reveal.is-visible { opacity: 1 !important; transform: none !important; transition: none !important; }
+        }
+
+        @keyframes r-pop {
+          0%   { transform: translateY(-2px) scale(0.6); opacity: 0; }
+          60%  { transform: translateY(0) scale(1.15); opacity: 1; }
+          100% { transform: translateY(0) scale(1); }
+        }
+        .animate-r-pop { animation: r-pop 600ms cubic-bezier(.2,.8,.2,1) 300ms both; }
+      `}</style>
     </main>
   );
 }
 
-/** Big gradient badge for step numbers */
+/* Step badge */
 function StepBadge({ n }: { n: string }) {
   return (
-    <div className="relative inline-block select-none">
-      <div className="px-4 py-1.5 md:px-5 md:py-2 rounded-full text-3xl md:text-5xl font-extrabold text-white ring-2 ring-white/20 shadow-[0_10px_30px_rgba(0,0,0,.45)] bg-gradient-to-r from-yellow-300 via-orange-400 to-[#BD570F] leading-none">
-        {n}
-      </div>
-      <div className="absolute -inset-1 rounded-full blur-sm bg-[conic-gradient(at_50%_50%,#ffffff33,transparent_30%)] opacity-60 pointer-events-none" />
-    </div>
+    <span className="inline-grid place-items-center w-9 h-9 rounded-full bg-gradient-to-r from-yellow-300 via-orange-400 to-[#BD570F] text-white font-extrabold shadow ring-1 ring-white/30">
+      {n}
+    </span>
   );
 }

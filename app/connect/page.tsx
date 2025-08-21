@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 /** Types */
@@ -173,30 +174,41 @@ export default function ConnectPage() {
             </a>
           </div>
 
-          <div className="relative w-full md:w-[500px] h-[500px] mx-auto mt-10 md:mt-0">
-            <div className="absolute top-14 left-20 w-[200px] h-[260px] border-2 border-dashed border-white rounded-lg z-0" />
-            <div className="absolute bottom-0 right-4 w-[220px] h-[280px] border-2 border-dashed border-white rounded-lg z-0" />
-            <img
-              src="/public/images/tribe1.png"
-              alt="Diverse Collage"
-              className="absolute bottom-0 left-0 w-[160px] md:w-[180px] rounded-xl z-10 shadow-xl"
-              loading="lazy"
-              decoding="async"
-            />
-            <img
-              src="/public/images/tribe2.png"
-              alt="Rainbow Group"
-              className="absolute top-8 left-24 w-[200px] md:w-[220px] rounded-xl z-20 shadow-xl"
-              loading="lazy"
-              decoding="async"
-            />
-            <img
-              src="/public/images/tribe3.png"
-              alt="Happy People"
-              className="absolute top-0 right-0 w-[180px] md:w-[200px] rounded-xl z-30 shadow-xl"
-              loading="lazy"
-              decoding="async"
-            />
+          {/* Collage — responsive, no stretching */}
+          <div className="relative w-full md:w-[500px] mx-auto mt-10 md:mt-0 aspect-square md:aspect-[5/4]">
+            <div className="absolute top-14 left-20 w-[42%] aspect-[3/4] border-2 border-dashed border-white/70 rounded-lg z-0" />
+            <div className="absolute bottom-0 right-4 w-[46%] aspect-[3/4] border-2 border-dashed border-white/70 rounded-lg z-0" />
+
+            <div className="absolute bottom-0 left-0 w-[36%] aspect-[3/4] rounded-xl overflow-hidden z-10 shadow-xl">
+              <Image
+                src="/images/tribe1.png"
+                alt="Diverse collage"
+                fill
+                className="object-cover"
+                sizes="(max-width:768px) 40vw, 18vw"
+                priority
+              />
+            </div>
+
+            <div className="absolute top-8 left-24 w-[40%] aspect-[3/4] rounded-xl overflow-hidden z-20 shadow-xl">
+              <Image
+                src="/images/tribe2.png"
+                alt="Rainbow group"
+                fill
+                className="object-cover"
+                sizes="(max-width:768px) 40vw, 18vw"
+              />
+            </div>
+
+            <div className="absolute top-0 right-0 w-[38%] aspect-[3/4] rounded-xl overflow-hidden z-30 shadow-xl">
+              <Image
+                src="/images/tribe3.png"
+                alt="Happy people"
+                fill
+                className="object-cover"
+                sizes="(max-width:768px) 40vw, 18vw"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -300,7 +312,7 @@ export default function ConnectPage() {
             <span className="text-yellow-400">through Bean–You farms</span>
           </h2>
 
-          {/* Mobile hint */}
+        {/* Mobile hint */}
           <p className="md:hidden text-xs text-yellow-200 mb-6">
             Tip: tap a card to reveal more details.
           </p>
@@ -403,7 +415,7 @@ export default function ConnectPage() {
 
             <div className="flex items-center justify-center">
               <img
-                src="/pulic/images/coffee-cup.png"
+                src="/images/coffee-cup.png"
                 alt="Find Your Tree"
                 className="w-2/3 md:w-1/2"
                 loading="lazy"
@@ -444,29 +456,14 @@ export default function ConnectPage() {
         </div>
       </section>
 
-      
-
       {/* Utilities */}
       <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .animate-fadeInUp {
-          animation: fadeInUp 0.4s ease-out;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .animate-fadeInUp { animation: fadeInUp 0.4s ease-out; }
         @keyframes fadeInUp {
-          0% {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          0% { opacity: 0; transform: translateY(30px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
