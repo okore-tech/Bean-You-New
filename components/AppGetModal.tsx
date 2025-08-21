@@ -74,8 +74,8 @@ export function useSmartGetApp(setOpen: (v: boolean) => void, links?: StoreLinks
   return React.useCallback(
     (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
       e.preventDefault();
-      if (redirectToStore(links)) return;
-      setOpen(true);
+      if (redirectToStore(links)) return; // mobile
+      setOpen(true); // desktop
     },
     [setOpen, links]
   );
@@ -109,8 +109,6 @@ export function Press3DButton(
 /* ----------------------------
    Desktop QR Modal (accessible)
    ---------------------------- */
-type NavigatorWithShare = Navigator & { share?: (data: any) => Promise<void> };
-
 export function AppGetModal({
   open,
   onClose,
@@ -148,12 +146,12 @@ export function AppGetModal({
     };
   }, [open, onClose]);
 
+  // ✅ TS-safe share with clipboard fallback + final fallback
   const handleShare = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     try {
-      const nav = navigator as NavigatorWithShare;
-
-      if ('share' in nav && typeof nav.share === 'function') {
+      const nav = navigator as Navigator & { share?: (data: any) => Promise<void> };
+      if (typeof nav.share === 'function') {
         await nav.share({
           title: 'Bean You — Get the app',
           text: 'Scan this QR to install the Bean You app.',
@@ -161,14 +159,12 @@ export function AppGetModal({
         });
         return;
       }
-
       if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         await navigator.clipboard.writeText(url);
         alert('Link copied to clipboard!');
         return;
       }
-
-      // Fallback for older browsers / non-secure contexts
+      // Final fallback
       const temp = document.createElement('input');
       temp.value = url;
       document.body.appendChild(temp);
@@ -297,3 +293,5 @@ export function AppGetModal({
     </div>
   );
 }
+
+export default AppGetModal;
