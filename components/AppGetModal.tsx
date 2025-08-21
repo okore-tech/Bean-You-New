@@ -109,6 +109,8 @@ export function Press3DButton(
 /* ----------------------------
    Desktop QR Modal (accessible)
    ---------------------------- */
+type NavigatorWithShare = Navigator & { share?: (data: any) => Promise<void> };
+
 export function AppGetModal({
   open,
   onClose,
@@ -149,16 +151,31 @@ export function AppGetModal({
   const handleShare = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     try {
-      if (navigator.share) {
-        await (navigator as any).share({
+      const nav = navigator as NavigatorWithShare;
+
+      if ('share' in nav && typeof nav.share === 'function') {
+        await nav.share({
           title: 'Bean You — Get the app',
           text: 'Scan this QR to install the Bean You app.',
           url,
         });
-      } else {
+        return;
+      }
+
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         await navigator.clipboard.writeText(url);
         alert('Link copied to clipboard!');
+        return;
       }
+
+      // Fallback for older browsers / non-secure contexts
+      const temp = document.createElement('input');
+      temp.value = url;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand?.('copy');
+      document.body.removeChild(temp);
+      alert('Link copied to clipboard!');
     } catch {
       // ignore
     }
