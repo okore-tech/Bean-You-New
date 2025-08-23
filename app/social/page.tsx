@@ -17,10 +17,11 @@ function openWeChat() {
   }
 }
 
-async function copyWeChatId() {
+async function copyWeChatId(setCopied: (v: boolean) => void) {
   try {
     await navigator.clipboard.writeText(WECHAT.id);
-    alert("WeChat ID copied");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   } catch {
     /* optional: toast fallback */
   }
@@ -28,6 +29,7 @@ async function copyWeChatId() {
 
 export default function SocialPage() {
   const [wechatOpen, setWeChatOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Lazy-init AOS if it exists (won't error if it's not installed)
   useEffect(() => {
@@ -274,11 +276,16 @@ export default function SocialPage() {
               Open WeChat
             </button>
             <button
-              onClick={copyWeChatId}
+              onClick={() => copyWeChatId(setCopied)}
               className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/15"
             >
               Copy ID
             </button>
+            {copied && (
+              <div className="mt-2 text-green-300 text-xs text-center transition-opacity duration-300">
+                WeChat ID copied!
+              </div>
+            )}
             <a
               href={WECHAT.qr}
               download="beanyou-wechat-qr"
@@ -354,7 +361,7 @@ function Modal({
             Close
           </button>
         </div>
-        <div className="max-h=[75vh] overflow-y-auto pr-1">{children}</div>
+        <div className="max-h-[75vh] overflow-y-auto pr-1">{children}</div>
       </div>
     </div>
   );
