@@ -51,8 +51,10 @@ export default function AboutPage() {
     { name: "AITEA ", img: "/images/hovername.png", desc: "AI / Web3 specialist." },
     { name: "MiValues", img: "/images/mivalues.jpg", desc: "Blockchain & ESG tooling." },
      { name: "MiMeta", img: "/images/mimeta.jpg", desc: "Blockchain & ESG tooling." },
-  ];
-
+  { name: "Aiza World", img: "/images/aiza.png", desc: "Blockchain & ESG tooling." },
+{ name: "Cyber Future", img: "/images/partner4.png", desc: "Blockchain & ESG tooling." },
+{ name: "Citizenship Enterprise and Governance", img: "/images/partner5.png", desc: "Blockchain & ESG tooling." },
+];
   return (
     <main className={`${poppins.className} text-white overflow-x-hidden`} style={{ backgroundColor: "#652B06" }}>
       {/* HERO */}
