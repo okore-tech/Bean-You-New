@@ -176,9 +176,10 @@ export default function Footer() {
       <Modal open={faqOpen} onClose={() => setFaqOpen(false)} title="BUY ESG — FAQ">
         {/* “Click to open more info” style accordion */}
         <div className="text-sm text-white/90">
-          <p className="mb-4">
-            Through livestreams and symbolic ‘adoption’ of coffee plots, you witness the life cycle of your coffee bean and the people behind it. It's not entertainment, it's consumption turning into connection.
-          </p>
+         <p className="mb-4">
+  Through livestreams and symbolic ‘adoption’ of coffee plots, you witness the life cycle of your coffee bean and the people behind it. It’s not entertainment, it’s consumption turning into connection.
+</p>
+
 
           <FaqItem q="1. What is iRWA (intangible Real World Assets)?">
             We connect Bean You® customers worldwide to coffee farmers in Kenya. We have created a digital twin of all our farms and broken the land into 1m2 plots, equivalent to one coffee crop. We encourage our audience to connect to our 1m2 coffee plots which carry a number of rights and privileges which they can benefit from.
