@@ -17,6 +17,22 @@ const poppins = Poppins({
    Bean You — Roadmap + Values
    =========================== */
 
+/* ---------- Scroll-to-top & no restoration ---------- */
+function useLoadAtTop() {
+  useEffect(() => {
+    if ("scrollRestoration" in history) {
+      const prev = (history as any).scrollRestoration;
+      (history as any).scrollRestoration = "manual";
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      return () => {
+        (history as any).scrollRestoration = prev ?? "auto";
+      };
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, []);
+}
+
 // ---------- Roadmap Data ----------
 const ROADMAP_ITEMS: Array<{
   year: string;
@@ -28,7 +44,7 @@ const ROADMAP_ITEMS: Array<{
   {
     year: "2023",
     title:
-      "Established Asili Coffee Group Foundation — a not‑for‑profit to help Kenyan farmers in health, education, and tech resources",
+      "Established Asili Coffee Group Foundation — a not-for-profit to help Kenyan farmers in health, education, and tech resources",
     details: [],
     artSrc: "/images/asili.png",
     ctas: [{ label: "Visit Asili Estates", href: "https://asiliestates.co.ke/" }],
@@ -60,15 +76,10 @@ const ROADMAP_ITEMS: Array<{
       "Issue Bean You® Points rewarding good ESG behaviour",
     ],
     artSrc: "/images/globe.png",
+    // no link CTAs here; 2026 will show exactly ONE “Get the App” button via SmartAppButton.
     ctas: [],
   },
-  {
-    year: "2027",
-    title: "IPO on London Stock Market",
-    details: [],
-    artSrc: "/images/biotech.png",
-    ctas: [],
-  },
+  // 2027 REMOVED COMPLETELY
 ];
 
 // ---------- Value slides ----------
@@ -251,19 +262,19 @@ function RoadmapItem({
   step: (typeof ROADMAP_ITEMS)[number];
   idx: number;
 }) {
-  const nonAppCtas = (step.ctas || []).filter((c) => !/(android|ios)/i.test(c.label));
-
+  // keep only non-app CTAs everywhere
+  const filtered = (step.ctas || []).filter((c) => !/get\s*the\s*app/i.test(c.label));
   return (
     <div className="flex flex-col gap-2.5 sm:gap-3">
       <div className="pl-0.5">
         <YearSticker year={step.year} />
       </div>
-      <RoadmapCard step={{ ...step, ctas: nonAppCtas }} idx={idx} />
+      <RoadmapCard step={{ ...step, ctas: filtered }} idx={idx} />
     </div>
   );
 }
 
-/* ---------- Card body (image container updated) ---------- */
+/* ---------- Card body ---------- */
 function RoadmapCard({
   step,
   idx,
@@ -272,6 +283,8 @@ function RoadmapCard({
   idx: number;
 }) {
   const ref = useRevealOnScroll<HTMLDivElement>(0.25);
+  const is2026 = step.year === "2026";
+  const firstCta = step.ctas?.[0]; // enforce ONE CTA per card
 
   return (
     <div
@@ -279,7 +292,7 @@ function RoadmapCard({
       className="card-reveal relative group roadmap-card rounded-[26px] border border-white/18 bg-white/10 backdrop-blur-xl shadow-[0_15px_50px_rgba(0,0,0,0.35)] p-5 sm:p-6 md:p-7 overflow-hidden"
     >
       <div className="grid grid-cols-1 sm:grid-cols-[180px,1fr] gap-5 items-center">
-        {/* Image frame: cover on mobile, contain on desktop */}
+        {/* Image */}
         <div className="relative w-full h-44 sm:h-40 md:h-44 lg:h-52 rounded-2xl border border-white/20 bg-gradient-to-br from-white/10 via-white/20 to-white/10 hue-rotate-anim overflow-hidden">
           <div className="absolute inset-0 rounded-2xl [clip-path:polygon(12%_0,100%_0,100%_88%,88%_100%,0_100%,0_12%)] pointer-events-none" />
           <Image
@@ -292,7 +305,7 @@ function RoadmapCard({
           />
         </div>
 
-        {/* Text + CTAs */}
+        {/* Text + CTA */}
         <div>
           <h3 className="text-[18px] sm:text-[19px] md:text-[20px] lg:text-[22px] font-extrabold text-white/95 leading-snug">
             {step.title}
@@ -309,21 +322,19 @@ function RoadmapCard({
             </ul>
           )}
 
-          {(step.ctas?.length ?? 0) > 0 || true ? (
-            <div className="mt-5 flex flex-wrap gap-3">
-              {step.ctas?.map((c) => (
-                <Link
-                  key={c.label}
-                  href={c.href}
-                  target="_blank"
-                  className="px-4 py-2.5 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
-                >
-                  {c.label}
-                </Link>
-              ))}
+          <div className="mt-5 flex flex-wrap gap-3">
+            {is2026 ? (
               <SmartAppButton />
-            </div>
-          ) : null}
+            ) : firstCta ? (
+              <Link
+                href={firstCta.href}
+                target="_blank"
+                className="px-4 py-2.5 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
+              >
+                {firstCta.label}
+              </Link>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
@@ -379,10 +390,11 @@ function Particles() {
   );
 }
 
-/* ---------- Value/Profit Carousel (unchanged logic, tightened sizes) ---------- */
+/* ---------- Value/Profit Carousel (stops first-render scroll) ---------- */
 function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_SLIDES }) {
   const [index, setIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const didMount = useRef(false);
 
   const go = (dir: -1 | 1) => {
     setIndex((prev) => (prev + dir + slides.length) % slides.length);
@@ -398,6 +410,10 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
   }, []);
 
   useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true; // prevent initial scroll that could jump the page
+      return;
+    }
     const node = trackRef.current;
     if (!node) return;
     const slide = node.children[index] as HTMLElement | undefined;
@@ -506,7 +522,7 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
           <MobileCarousel slides={VALUE_SLIDES} />
         </div>
 
-        {/* Profit row */}
+        {/* Profit row (unchanged) */}
         {(() => {
           const profit = [
             { k: "Cafés & Events", d: "In-store revenue, memberships, promos" },
@@ -566,12 +582,17 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
   );
 }
 
-/* ---------- Mobile carousel ---------- */
+/* ---------- Mobile carousel (stop first-render scroll) ---------- */
 function MobileCarousel({ slides }: { slides: typeof VALUE_SLIDES }) {
   const [index, setIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const didMount = useRef(false);
 
   useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true; // prevent initial auto-scroll
+      return;
+    }
     const node = trackRef.current;
     if (!node) return;
     const slide = node.children[index] as HTMLElement | undefined;
@@ -630,8 +651,9 @@ function MobileCarousel({ slides }: { slides: typeof VALUE_SLIDES }) {
   );
 }
 
-/* ---------- Exported wrapper (apply Poppins here) ---------- */
+/* ---------- Exported wrapper ---------- */
 export default function BeanYou_RoadmapAndValue() {
+  useLoadAtTop();
   return (
     <div className={`${poppins.className} antialiased`}>
       <RoadmapMosaic />
