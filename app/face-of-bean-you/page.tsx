@@ -10,8 +10,9 @@ type Card = {
   title: string;
   desc: string;
   alt?: string;
-  video?: string; // optional
-  cta?: string;   // optional
+  video?: string; // local or external video URL
+  cta?: string;   // button label
+  href?: string;  // optional link (used when no video)
 };
 
 function isYouTubeUrl(url: string) {
@@ -42,7 +43,13 @@ export default function FaceOfBeanYouPage() {
       try {
         const AOS = (await import("aos")).default;
         await import("aos/dist/aos.css");
-        AOS.init();
+        AOS.init({
+          duration: 700,
+          easing: "ease-out",
+          once: true,   // prevent re-animating on click/scroll
+          mirror: false,
+          offset: 50,
+        });
       } catch {}
     })();
   }, []);
@@ -70,30 +77,34 @@ export default function FaceOfBeanYouPage() {
         {
           img: "/images/billy.png",
           title: "Billy • Virtual Architect",
-          desc:
-            "Mapping beans into the metaverse. Real farms mapped virtually and divided into plots.",
-          // no video/cta
+          desc: "Mapping beans into the metaverse. Real farms, virtual plots.",
+          href: "#contact",
+          cta: "✉️ Send Message",
         },
         {
           img: "/images/joyce1.jpeg",
           title: "Joyce • Gen-z tech",
-          desc: "Ideology + tech to spark creativity and modern UI/UX.",
-          // no video/cta
+          desc: "Ideology + code to spark creativity and modern UI/UX.",
+          href: "#contact",
+          cta: "✉️ Send Message",
         },
       ],
       applicants: [
         {
           img: "/images/euginia2.jpg",
-          title: " Bean You applicant • Euginia",
-          desc: "Applications will be spotlighted and collaborations achieved.",
-          video: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
-          cta: "🎥 Watch Video",
+          title: "Spotlight • Vivian",
+          desc:
+            "Courage, culture, community. Applicants submission.",
+          video: "/videos/Vivian.mov", // local video; modal includes MP4 fallback
+          cta: "🎥 Watch",
         },
         {
-          img: "/images/Vivian.jpg",
-          title: "You? • Culture Crafter",
-          desc: "Pitch your story. Build with us.",
-          
+          img: "/images/community.jpg",
+          title: "Your Turn • Send a Message",
+          desc:
+            "Pitch your idea, collab, or cause — we reply within 24 hours. Share links and socials too.",
+          href: "#contact",
+          cta: "✉️ Message the Team",
         },
       ],
     }),
@@ -115,9 +126,23 @@ export default function FaceOfBeanYouPage() {
         }
         .card-mask {
           clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
-          transition: clip-path 0.4s ease, transform 0.4s ease;
+          transition: clip-path 0.4s ease, transform 0.4s ease, box-shadow 0.3s ease;
         }
-        .card-mask:hover { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: scale(1.02); }
+        .card-mask:hover {
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          transform: scale(1.02);
+          box-shadow: 0 18px 50px rgba(0,0,0,.2);
+        }
+        /* Subtle pulsing ring for Applicants */
+        @keyframes ringPulse {
+          0%   { box-shadow: 0 0 0 0 rgba(249,115,22,.35); }
+          70%  { box-shadow: 0 0 0 18px rgba(249,115,22,0); }
+          100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
+        }
+        .pulse-ring {
+          animation: ringPulse 2.6s ease-out infinite;
+          border-radius: 1rem;
+        }
         .hero-img-mask {
           clip-path: polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%);
           transition: all 0.5s ease;
@@ -128,21 +153,9 @@ export default function FaceOfBeanYouPage() {
       <main className="relative z-10">
         {/* HERO */}
         <section className="clip-diagonal relative overflow-hidden bg-[#fefae0] px-6 py-24 text-[#4e342e]">
-          <div
-            className="floating-blob absolute left-0 top-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl"
-            style={{ backgroundColor: "#fecaca" }}
-            data-aos="zoom-in"
-          />
-          <div
-            className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-2xl"
-            style={{ backgroundColor: "#ea580c" }}
-            data-aos="zoom-in"
-            data-aos-delay="300"
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-10"
-            style={{ backgroundImage: "url(/images/texture.png)" }}
-          />
+          <div className="floating-blob absolute left-0 top-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl" style={{ backgroundColor: "#fecaca" }} data-aos="zoom-in" />
+          <div className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-2xl" style={{ backgroundColor: "#ea580c" }} data-aos="zoom-in" data-aos-delay="300" />
+          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col-reverse items-center gap-10 md:flex-row">
             <div className="text-center md:w-1/2 md:text-left">
               <h1 className="mb-6 text-5xl font-bold">Find Your Tribe, Build Your Bean You.</h1>
@@ -172,19 +185,12 @@ export default function FaceOfBeanYouPage() {
 
         {/* MISS KENYA */}
         <section id="misskenya" className="relative overflow-hidden bg-orange-100 px-6 py-24 text-[#4e342e]">
-          <div
-            className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl"
-            style={{ backgroundColor: "#c2410c" }}
-            data-aos="fade-right"
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-10"
-            style={{ backgroundImage: "url(/images/texture.png)" }}
-          />
+          <div className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl" style={{ backgroundColor: "#c2410c" }} data-aos="fade-right" />
+          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center justify-between gap-10 md:flex-row">
             <div className="md:w-1/2" data-aos="fade-right">
               <div className="overflow-hidden rounded-xl border-8 border-orange-200 shadow-2xl">
-                <video controls className="h-auto w-full rounded-xl">
+                <video controls className="h-auto w-full rounded-xl" playsInline>
                   <source src="/videos/grace.mp4" type="video/mp4" />
                 </video>
               </div>
@@ -201,15 +207,8 @@ export default function FaceOfBeanYouPage() {
 
         {/* TRIBE SECTION */}
         <section id="faces" className="relative overflow-hidden bg-[#e1b382] px-6 py-24 text-[#4e342e]">
-          <div
-            className="floating-blob absolute right-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-3xl"
-            style={{ backgroundColor: "#9a3412" }}
-            data-aos="fade-left"
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-10"
-            style={{ backgroundImage: "url(/images/texture.png)" }}
-          />
+          <div className="floating-blob absolute right-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-3xl" style={{ backgroundColor: "#9a3412" }} data-aos="fade-left" />
+          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
           <div className="relative z-10 mx-auto max-w-6xl">
             <h2 className="mb-12 text-center text-4xl font-bold">Meet the Tribe</h2>
 
@@ -233,31 +232,69 @@ export default function FaceOfBeanYouPage() {
 
             {/* Cards */}
             <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-              {cards[filter].map((c: Card, idx) => (
-                <div key={idx} className="card-mask group overflow-hidden rounded-xl bg-white shadow-xl" data-aos="fade-up">
-                  <Image src={c.img} alt={c.alt ?? c.title} width={900} height={600} className="h-64 w-full object-cover" />
-                  <div className="p-6 text-center">
-                    <h3 className="text-xl font-bold text-orange-800">{c.title}</h3>
-                    <p className="mt-2 text-sm text-[#4e342e]">{c.desc}</p>
+              {cards[filter].map((c: Card, idx) => {
+                const isApplicants = filter === "applicants";
+                // try to provide an MP4 fallback path if the video is .mov
+                const mp4Fallback =
+                  c.video && /\.mov$/i.test(c.video) ? c.video.replace(/\.mov$/i, ".mp4") : undefined;
 
-                    {/* Render button ONLY when a video exists */}
-                    {c.video && (
-                      <button
-                        onClick={() => {
-                          if (!c.video) return;
-                          const yt = isYouTubeUrl(c.video);
-                          setIsYT(yt);
-                          setVideoUrl(yt ? toYouTubeEmbed(c.video) : c.video);
-                          setLightboxOpen(true);
-                        }}
-                        className="mt-4 rounded-full bg-orange-600 px-4 py-2 text-white transition hover:bg-orange-700"
-                      >
-                        {c.cta ?? "🎥 Watch Video"}
-                      </button>
+                return (
+                  <div
+                    key={idx}
+                    className={`card-mask relative group overflow-hidden rounded-2xl bg-white shadow-xl transition ${
+                      isApplicants ? "ring-2 ring-offset-2 ring-offset-[#e1b382] ring-orange-400/70 hover:ring-orange-500" : ""
+                    }`}
+                    data-aos="fade-up"
+                  >
+                    {/* pulsing ring accent for applicants */}
+                    {isApplicants && (
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute -inset-1 rounded-2xl pulse-ring"
+                      />
                     )}
+
+                    {/* badge */}
+                    {isApplicants && (
+                      <span
+                        className={`absolute left-4 top-4 z-10 rounded-full px-3 py-1 text-xs font-bold text-white shadow ${
+                          idx === 0 ? "bg-orange-600" : "bg-emerald-600"
+                        }`}
+                      >
+                        {idx === 0 ? "Spotlight" : "Open Invite"}
+                      </span>
+                    )}
+
+                    <Image src={c.img} alt={c.alt ?? c.title} width={900} height={600} className="h-64 w-full object-cover" />
+                    <div className="p-6 text-center">
+                      <h3 className="text-xl font-extrabold text-orange-900 tracking-tight">{c.title}</h3>
+                      <p className="mt-2 text-sm text-[#4e342e]/90">{c.desc}</p>
+
+                      {/* unified gradient CTA for all */}
+                      {c.video ? (
+                        <button
+                          onClick={() => {
+                            const yt = isYouTubeUrl(c.video!);
+                            setIsYT(yt);
+                            setVideoUrl(yt ? toYouTubeEmbed(c.video!) : c.video!);
+                            setLightboxOpen(true);
+                          }}
+                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 px-5 py-2 font-semibold text-black shadow-md hover:scale-[1.03] active:scale-95 transition"
+                        >
+                          {c.cta ?? "🎥 Watch Video"}
+                        </button>
+                      ) : (
+                        <a
+                          href={c.href ?? "#contact"}
+                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 px-5 py-2 font-semibold text-black shadow-md hover:scale-[1.03] active:scale-95 transition"
+                        >
+                          {c.cta ?? "✉️ Send Message"}
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -269,10 +306,7 @@ export default function FaceOfBeanYouPage() {
                 if (e.currentTarget === e.target) setLightboxOpen(false);
               }}
             >
-              <div
-                className="pointer-events-none absolute inset-0 opacity-10 mix-blend-overlay"
-                style={{ backgroundImage: "url(/images/texture.png)" }}
-              />
+              <div className="pointer-events-none absolute inset-0 opacity-10 mix-blend-overlay" style={{ backgroundImage: "url(/images/texture.png)" }} />
               <div className="relative w-full max-w-3xl p-4">
                 <button
                   onClick={() => setLightboxOpen(false)}
@@ -294,7 +328,13 @@ export default function FaceOfBeanYouPage() {
                       />
                     </div>
                   ) : (
-                    <video src={videoUrl} controls autoPlay muted className="max-h-[80vh] w-full">
+                    <video controls autoPlay playsInline className="max-h-[80vh] w-full">
+                      {/* Primary (whatever URL you passed, e.g., .mov) */}
+                      <source src={videoUrl} type={/\.mov$/i.test(videoUrl) ? "video/quicktime" : "video/mp4"} />
+                      {/* Optional MP4 fallback if a .mov URL is used and an .mp4 exists at the same path */}
+                      { /\.mov$/i.test(videoUrl) && (
+                        <source src={videoUrl.replace(/\.mov$/i, ".mp4")} type="video/mp4" />
+                      ) }
                       Your browser does not support the video tag.
                     </video>
                   )}
@@ -304,27 +344,30 @@ export default function FaceOfBeanYouPage() {
           )}
         </section>
 
-        {/* CONTACT */}
+        {/* CONTACT (mailto to info@beanyou.com) */}
         <section id="contact" className="relative overflow-hidden bg-[#fcd5ce] px-6 py-24 text-[#4e342e]">
-          <div
-            className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl"
-            style={{ backgroundColor: "#fecaca" }}
-          />
-          <div
-            className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl"
-            style={{ backgroundColor: "#c2410c" }}
-          />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-10"
-            style={{ backgroundImage: "url(/images/texture.png)" }}
-          />
+          <div className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl" style={{ backgroundColor: "#fecaca" }} />
+          <div className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl" style={{ backgroundColor: "#c2410c" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
           <div className="relative z-10 mx-auto max-w-xl text-center">
             <h2 className="mb-4 text-4xl font-bold">📬 Let’s Brew Something</h2>
             <p className="mb-6">Collab, connect, or just say hi — we’re building this tribe together.</p>
-            <form className="space-y-5">
-              <input type="text" placeholder="Your Name" className="w-full rounded-lg border border-gray-300 px-4 py-3" required />
-              <input type="email" placeholder="Your Email" className="w-full rounded-lg border border-gray-300 px-4 py-3" required />
-              <textarea placeholder="Your Message" rows={4} className="w-full rounded-lg border border-gray-300 px-4 py-3" required />
+            <form
+              className="space-y-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.currentTarget as HTMLFormElement;
+                const name = (form.elements.namedItem("name") as HTMLInputElement)?.value ?? "";
+                const email = (form.elements.namedItem("email") as HTMLInputElement)?.value ?? "";
+                const message = (form.elements.namedItem("message") as HTMLTextAreaElement)?.value ?? "";
+                const subject = `Face of Bean You message from ${name}`;
+                const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
+                window.location.href = `mailto:info@beanyou.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+              }}
+            >
+              <input name="name" type="text" placeholder="Your Name" className="w-full rounded-lg border border-gray-300 px-4 py-3" required />
+              <input name="email" type="email" placeholder="Your Email" className="w-full rounded-lg border border-gray-300 px-4 py-3" required />
+              <textarea name="message" placeholder="Your Message" rows={4} className="w-full rounded-lg border border-gray-300 px-4 py-3" required />
               <button type="submit" className="w-full rounded-full bg-orange-700 py-3 font-bold text-white transition hover:bg-orange-800">
                 Send Message
               </button>
