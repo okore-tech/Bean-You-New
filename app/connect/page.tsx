@@ -32,9 +32,10 @@ export default function ConnectPage() {
     () => [
       {
         id: "genz",
-        name: "GEN-Z",
+        // note: display name required in lowercase
+        name: "gen-z",
         img: "/images/genz.png",
-        desc: "Young creators and disruptors connected to new age culture and innovation.",
+        desc: "Young creators and disruptors connected to new-age culture and innovation.",
       },
       {
         id: "investor",
@@ -46,7 +47,7 @@ export default function ConnectPage() {
         id: "coffee",
         name: "Coffee Lover",
         img: "/images/coffeelover2.jpg",
-        desc: "Passionate about every sip, origin and ritual of your brew.",
+        desc: "Passionate about every sip, origin, and ritual of your brew.",
       },
       {
         id: "eco",
@@ -79,7 +80,7 @@ export default function ConnectPage() {
     },
     {
       title: "🪴 Claim Your Plot",
-      lead: "Register and reserve your symbolic plot in the Bean–You digital farm.",
+      lead: "Register and reserve your symbolic plot in the Bean You® digital farm.",
       detail:
         "Every tribe member gets a symbolic plot where their bean story grows. It’s your badge of belonging.",
     },
@@ -93,7 +94,7 @@ export default function ConnectPage() {
       title: "🌍 Connect",
       lead: "Find your tribe, share ideas, and unlock opportunities with other members.",
       detail:
-        "You’re now a part of a tribe — engage in events, courses, and shared projects via the Bean‑You platform.",
+        "You’re now a part of a tribe — engage in events, courses, and shared projects via the Bean You® platform.",
     },
   ];
 
@@ -149,13 +150,132 @@ export default function ConnectPage() {
     }
   };
 
+  /** Modal content per tribe */
+  const getModal = (tribe: Tribe) => {
+    switch (tribe.id) {
+      case "genz":
+        return {
+          copy: (
+            <>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Be the face of change. Share your story, spark movements, and
+                build real connections that go beyond likes. Your creativity,
+                culture, and voice shape the future of Bean You®.
+              </p>
+              <p className="text-sm text-gray-600">
+                Tell your truth, grow your presence, and inspire your tribe across socials.
+              </p>
+            </>
+          ),
+          cta: (
+            <Link
+              href="/face-of-bean-you" // change if your route differs
+              className="self-center sm:self-start text-center w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
+            >
+              ✨ Face of Bean You
+            </Link>
+          ),
+        };
+      case "investor":
+        return {
+          copy: (
+            <>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Back farmers and measurable impact by adopting 1m² coffee plots as
+                iRWA. Track outcomes, link to ESG, and help scale a values-led ecosystem.
+              </p>
+            </>
+          ),
+          cta: (
+            <a
+              href="https://parcels.beanyou.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="self-center sm:self-start text-center w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
+            >
+              🌍 Open iRWA Platform
+            </a>
+          ),
+        };
+      case "coffee":
+        return {
+          copy: (
+            <>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Love great coffee? Help power the people behind every cup.
+                Your support strengthens farmer health programs, school access,
+                and on-farm technology that lifts yields and incomes.
+              </p>
+            </>
+          ),
+          cta: (
+            <a
+              href="https://asiliestates.co.ke/"
+              target="_blank"
+              rel="noreferrer"
+              className="self-center sm:self-start text-center w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
+            >
+              ☕ Visit Asili Estates
+            </a>
+          ),
+        };
+      case "eco":
+        return {
+          copy: (
+            <>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Use the app to see crop vitality and farm updates, tip farmers for
+                good practices, and fund tools like solar pumps and soil sensors.
+                Real-time action, real-world outcomes.
+              </p>
+            </>
+          ),
+          cta: (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                redirectToApp();
+              }}
+              className="self-center sm:self-start text-center w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
+            >
+              🚀 Get the App
+            </a>
+          ),
+        };
+      case "global":
+        return {
+          copy: (
+            <>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Be part of a worldwide community that connects through stories,
+                causes, and coffee. Jump into our channels and say hi.
+              </p>
+            </>
+          ),
+          cta: (
+            <Link
+              href="/social"
+              className="self-center sm:self-start text-center w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
+            >
+              🌐 Explore Socials
+            </Link>
+          ),
+        };
+      default:
+        return {
+          copy: <p className="text-gray-700 text-sm">Welcome to Bean You®.</p>,
+          cta: null,
+        };
+    }
+  };
+
   /** Render */
   return (
     <div
       style={{ background: "#BD570F", fontFamily: "Poppins, sans-serif" }}
       className="text-white"
     >
-
       {/* HERO */}
       <section className="relative overflow-hidden py-20">
         <div className="absolute inset-0 bg-[rgba(197,17,17,0.23)] backdrop-blur-md z-0" />
@@ -164,7 +284,7 @@ export default function ConnectPage() {
             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
               Create opportunities globally, find your tribe
               <br />
-              and get connected with <span className="text-yellow-300">Bean‑You</span>
+              and get connected with <span className="text-yellow-300">Bean You®</span>
             </h1>
             <a
               href="#tribes"
@@ -283,21 +403,11 @@ export default function ConnectPage() {
             <div className="space-y-4">
               <h3 className="text-3xl font-extrabold text-[#BD570F]">{activeTribe.name}</h3>
               <p className="text-gray-700 text-sm leading-relaxed">{activeTribe.desc}</p>
-              <p className="text-sm text-gray-600">
-                Each tribe is represented by a symbolic tree on the Bean‑You virtual farm. Join your tribe and grow your
-                identity through community, shared values, and purpose. Download the Bean‑You App to get started.
-              </p>
+
+              {/* Custom copy + CTA per tribe */}
+              {getModal(activeTribe).copy}
               <div className="flex flex-col sm:flex-row justify-between gap-4 pt-2">
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    redirectToApp();
-                  }}
-                  className="self-center sm:self-start text-center w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
-                >
-                  🚀 Get the App
-                </a>
+                {getModal(activeTribe).cta}
               </div>
             </div>
           </div>
@@ -309,10 +419,10 @@ export default function ConnectPage() {
         <div className="max-w-6xl mx-auto text-center" data-aos="fade-up">
           <h2 className="text-3xl font-bold mb-12">
             How to get connected <br />
-            <span className="text-yellow-400">through Bean–You farms</span>
+            <span className="text-yellow-400">through Bean You® farms</span>
           </h2>
 
-        {/* Mobile hint */}
+          {/* Mobile hint */}
           <p className="md:hidden text-xs text-yellow-200 mb-6">
             Tip: tap a card to reveal more details.
           </p>
@@ -362,40 +472,43 @@ export default function ConnectPage() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
               <div className="bg-yellow-100 border-l-4 border-[#BD570F] p-5 rounded-md shadow">
-                <h3 className="font-bold text-lg mb-2">Why Bean–You exists</h3>
+                <h3 className="font-bold text-lg mb-2">Why Bean You® exists</h3>
                 <p className="text-sm">
-                  Bean–You empowers people to connect with purpose-driven communities rooted in coffee farms. Through
+                  Bean You® empowers people to connect with purpose-driven communities rooted in coffee farms. Through
                   tribes, tokens, and tech — we build bridges from the soil to the screen.
                 </p>
               </div>
 
               {[
                 {
-                  q: "How is Bean–You connected to coffee?",
-                  a: "Our roots begin in real coffee farms like Asili in Kenya. Bean–You symbolizes more than coffee—it represents people, purpose, and identity tied to sustainable agriculture and community growth.",
+                  q: "How is Bean You® connected to coffee?",
+                  a: "Our roots begin in real coffee farms like Asili in Kenya. Bean You® symbolizes more than coffee — it represents people, purpose, and identity tied to sustainable agriculture and community growth.",
                 },
                 {
                   q: "What does ESG have to do with my tribe?",
-                  a: "Every tribe promotes Environmental, Social, and Governance values. Your activities on the Bean–You app help support ESG-aligned actions—from tree planting to educational support to fair trade.",
+                  a: "Every tribe promotes Environmental, Social, and Governance values. Your activities on the Bean You® app help support ESG-aligned actions — from tree planting to educational support to fair trade.",
                 },
                 {
                   q: "How do I join a tribe?",
                   a: "Download the app, choose a symbolic bean crop that reflects your values, and claim your digital plot. That’s your entry point into a tribe that resonates with who you are.",
                 },
                 {
-                  q: "What are Bean–You tokens?",
+                  q: "What are Bean You® tokens?",
                   a: "They are digital rewards earned through app actions, participation, and tribe contributions. You can redeem them for free courses, community games, collaborations, and exclusive rewards.",
                 },
                 {
                   q: "What is Asili Coffee’s role?",
-                  a: "Asili Coffee is a real-life example of a farm community powering Bean–You. It’s a model tribe—farmers, youth, and global allies working together through the platform to grow and trade sustainably.",
+                  a: "Asili Coffee is a real-life example of a farm community powering Bean You®. It’s a model tribe — farmers, youth, and global allies working together through the platform to grow and trade sustainably.",
                 },
                 {
                   q: "How is this different from just another app?",
-                  a: "Bean–You isn’t just digital. It’s physical farms, real rewards, and live impact. The goal is to unite people globally around action, expression, and shared purpose rooted in agriculture and culture.",
+                  a: "Bean You® isn’t just digital. It’s physical farms, real rewards, and live impact. The goal is to unite people globally around action, expression, and shared purpose rooted in agriculture and culture.",
                 },
               ].map(({ q, a }) => (
-                <details key={q} className="bg-white rounded shadow p-4 group cursor-pointer hover:bg-yellow-50 transition">
+                <details
+                  key={q}
+                  className="bg-white rounded shadow p-4 group cursor-pointer hover:bg-yellow-50 transition"
+                >
                   <summary className="font-semibold flex justify-between items-center select-none">
                     <span>{q}</span>
                     <svg
@@ -439,7 +552,7 @@ export default function ConnectPage() {
             Ready to root your story in coffee, community and connection?
           </h3>
           <p className="text-base sm:text-lg mb-10 opacity-90 leading-relaxed">
-            Download the <strong>Bean‑You App</strong> to claim your digital farm plot, join your tribe, and earn tokens
+            Download the <strong>Bean You® App</strong> to claim your digital farm plot, join your tribe, and earn tokens
             redeemable for free learning, games, and collaborations.
           </p>
 
