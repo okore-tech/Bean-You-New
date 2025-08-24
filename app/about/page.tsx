@@ -300,7 +300,7 @@ function TechnologySection() {
           {/* RIGHT: Chandler spotlight */}
           <aside className="group relative overflow-hidden rounded-3xl border border-white/20 bg-white/10 backdrop-blur-lg p-0 shadow-[0_20px_60px_rgba(0,0,0,.35)]" data-aos="fade-left" tabIndex={0}>
             <div className="relative h-48 w-full bg-gradient-to-r from-yellow-300/30 to-orange-500/30">
-              <img src="/images/chandler.jpg" alt="Chandler Guo" className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity" loading="lazy" />
+              <img src="/images/chandler.jpeg" alt="Chandler Guo" className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity" loading="lazy" />
               <div className="absolute inset-0 [clip-path:polygon(0_0,100%_0,100%_78%,0_100%)] bg-gradient-to-b from-transparent to-[#00000066]" />
             </div>
             <div className="p-6">

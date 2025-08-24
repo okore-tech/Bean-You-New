@@ -168,6 +168,174 @@ function QrModal({
 }
 
 /* ─────────────────────────────────────────────
+   Café Showcase (Step 3 only)
+────────────────────────────────────────────── */
+type CafePhoto = { src: string; alt?: string };
+
+const CAFE_PHOTOS: CafePhoto[] = [
+  { src: "/images/cafe5.jpg", alt: "Bean You® café — warm interior" },
+  { src: "/images/cafe4.jpg", alt: "Bean You® café — community table" },
+  { src: "/images/cafe8.jpg", alt: "Bean You® café — counter & brew bar" },
+  { src: "/images/cafe7.jpg", alt: "Bean You® café — facade" },
+  { src: "/images/cafe1.png", alt: "Bean You® café — outdoor seating" },
+  { src: "/images/cafe3.png", alt: "Bean You® café — evening ambience" },
+];
+
+function CafeCollage() {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const scrollBy = (dir: number) => {
+    const node = trackRef.current;
+    if (!node) return;
+    node.scrollBy({ left: dir * Math.min(node.clientWidth * 0.9, 480), behavior: "smooth" });
+  };
+
+  return (
+    <div className="mt-0">
+      {/* Mobile: swipeable slider */}
+      <div className="md:hidden relative">
+        <div
+          ref={trackRef}
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1"
+          style={{ scrollSnapType: "x mandatory", scrollBehavior: "smooth" }}
+        >
+          {CAFE_PHOTOS.map((p, i) => (
+            <article
+              key={i}
+              className="snap-center shrink-0 w-[86%] rounded-2xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_14px_44px_rgba(0,0,0,.35)]"
+            >
+              <div className="relative h-56">
+                <Image src={p.src} alt={p.alt ?? "Bean You® café"} fill className="object-cover" />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* gradient edges + arrows */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-[#000]/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-[#000]/40 to-transparent" />
+        <div className="absolute inset-y-0 left-1 flex items-center">
+          <button
+            onClick={() => scrollBy(-1)}
+            aria-label="Previous café"
+            className="pointer-events-auto rounded-full bg-white/15 hover:bg-white/25 p-2 backdrop-blur border border-white/20"
+          >
+            ‹
+          </button>
+        </div>
+        <div className="absolute inset-y-0 right-1 flex items-center">
+          <button
+            onClick={() => scrollBy(1)}
+            aria-label="Next café"
+            className="pointer-events-auto rounded-full bg-white/15 hover:bg-white/25 p-2 backdrop-blur border border-white/20"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop: mosaic grid */}
+      <div className="hidden md:grid grid-cols-12 gap-3">
+        <div className="col-span-7 row-span-2">
+          <div className="relative w-full rounded-3xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_18px_54px_rgba(0,0,0,.35)] aspect-[4/3]">
+            <Image src={CAFE_PHOTOS[0].src} alt={CAFE_PHOTOS[0].alt ?? "Bean You® café"} fill className="object-cover" />
+          </div>
+        </div>
+        <div className="col-span-5 row-span-2">
+          <div className="relative w-full rounded-3xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_18px_54px_rgba(0,0,0,.35)] aspect-[3/4]">
+            <Image src={CAFE_PHOTOS[3].src} alt={CAFE_PHOTOS[3].alt ?? "Bean You® café"} fill className="object-cover" />
+          </div>
+        </div>
+        {[1, 2, 4].map((idx) => (
+          <div key={idx} className="col-span-4">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_12px_36px_rgba(0,0,0,.32)] aspect-[16/10]">
+              <Image src={CAFE_PHOTOS[idx].src} alt={CAFE_PHOTOS[idx].alt ?? "Bean You® café"} fill className="object-cover" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Underline message */}
+      <p className="mt-4 text-center text-orange-50/95 text-sm md:text-base">
+        stores are to be opened in many major cities and towns around the world.
+      </p>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Shared Step Container
+────────────────────────────────────────────── */
+type StepCTA = { label: string; href?: string; onClick?: (e?: React.MouseEvent<HTMLAnchorElement>) => void };
+type Step = { id: string; n: string; title: string; text: string; img?: string; ctas?: StepCTA[] };
+
+function StepSection({
+  step,
+  index,
+  sectionRef,
+  childrenMedia, // for Step 3
+}: {
+  step: Step;
+  index: number;
+  sectionRef?: (el: HTMLElement | null) => void;
+  childrenMedia?: React.ReactNode;
+}) {
+  return (
+    <section id={step.id} ref={sectionRef} data-idx={index} className="scroll-mt-28">
+      <div className="rounded-3xl border border-white/15 bg-white/5 shadow-[0_18px_54px_rgba(0,0,0,.35)] p-5 md:p-7">
+        {/* Header/Text */}
+        <div data-reveal className="reveal">
+          <div className="inline-flex items-center gap-2">
+            <StepBadge n={step.n} />
+            <span className="text-amber-200/90 font-semibold">Step {step.n}</span>
+          </div>
+          <h2 className="mt-3 text-2xl md:text-3xl font-extrabold">{step.title}</h2>
+          <p className="mt-3 text-orange-50/95 leading-relaxed">{step.text}</p>
+        </div>
+
+        {/* Media */}
+        <div className="mt-6">
+          {childrenMedia ? (
+            <div data-reveal className="reveal">
+              {childrenMedia}
+            </div>
+          ) : step.img ? (
+            <div
+              data-reveal
+              className="reveal relative w-full aspect-[16/10] md:aspect-[21/9] max-h-[520px] rounded-2xl overflow-hidden border border-white/15 bg-white/5"
+            >
+              <Image
+                src={step.img}
+                alt={step.title}
+                fill
+                className="object-cover"
+                priority={index < 2}
+              />
+            </div>
+          ) : null}
+        </div>
+
+        {/* CTAs (none for step 3) */}
+        {!!(step.ctas?.length && step.id !== "step-3") && (
+          <div data-reveal className="reveal mt-5 flex flex-wrap gap-3">
+            {step.ctas!.map((c) =>
+              c.onClick ? (
+                <Press3DButton key={c.label} href="#" onClick={c.onClick}>
+                  {c.label}
+                </Press3DButton>
+              ) : (
+                <Link key={c.label} href={c.href!} className="inline-block">
+                  <Press3DButton>{c.label}</Press3DButton>
+                </Link>
+              )
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
    Page
 ────────────────────────────────────────────── */
 export default function ExplorePage() {
@@ -175,37 +343,20 @@ export default function ExplorePage() {
   const [active, setActive] = useState(0);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
-  // Smart get‑app: mobile → store, desktop → QR
+  // Smart get-app: mobile → store, desktop → QR
   const onGetApp = useCallback((e?: React.MouseEvent<HTMLAnchorElement>) => {
     e?.preventDefault?.();
     if (redirectToStore()) return;
     setQrOpen(true);
   }, []);
 
-  // Add CTA/Step types so TypeScript can narrow properties correctly
-  type StepCTA = {
-    label: string;
-    href?: string;
-    onClick?: (e?: React.MouseEvent<HTMLAnchorElement>) => void;
-  };
-
-  type Step = {
-    id: string;
-    n: string;
-    title: string;
-    text: string;
-    img: string;
-    ctas: StepCTA[];
-  };
-
-  // Steps with corrected CTAs
   const steps = useMemo<Step[]>(
     () => [
       {
         id: "step-1",
         n: "1",
         title: "Recognise Who You Are",
-        text: "Share your values by simple text, a 60‑sec voice note, or a 30‑sec selfie video. Our AI does the rest.",
+        text: "Share your values by simple text, a 60-sec voice note, or a 30-sec selfie video. Our AI does the rest.",
         img: "/images/explore1.jpg",
         ctas: [{ label: "Get the app", onClick: onGetApp }],
       },
@@ -222,8 +373,7 @@ export default function ExplorePage() {
         n: "3",
         title: "Meet IRL in Our Cafés",
         text: "We’re rolling out 10,000 cafés worldwide. Enjoy a free cup, meet your tribe, and grow together.",
-        img: "/images/cafe01.png",
-        ctas: [{ label: "Get the app", onClick: onGetApp }],
+        // media via <CafeCollage/>, no CTAs here
       },
       {
         id: "step-4",
@@ -237,7 +387,7 @@ export default function ExplorePage() {
         id: "step-5",
         n: "5",
         title: "Support the Farm Behind Your Coffee",
-        text: "Adopt a coffee crop from as little as US$3.8 one‑off, chat with the farmer, and follow the journey.",
+        text: "Adopt a coffee crop from as little as US$3.8 one-off, chat with the farmer, and follow the journey.",
         img: "/images/kahirofarm.webp",
         ctas: [{ label: "Adopt on the 1m² Platform", href: "https://parcels.beanyou.com/" }],
       },
@@ -245,7 +395,7 @@ export default function ExplorePage() {
     [onGetApp]
   );
 
-  // Observe active section
+  // Observe active section (for top path & mobile mini-map)
   useEffect(() => {
     const els = sectionRefs.current.filter(Boolean) as HTMLElement[];
     if (!els.length) return;
@@ -265,18 +415,24 @@ export default function ExplorePage() {
     return () => io.disconnect();
   }, [steps.length]);
 
-  // Reveals
+  // Reveal on view (targets [data-reveal])
   useEffect(() => {
     const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((en) => en.isIntersecting && en.target.classList.add("is-visible")),
+      (entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            en.target.classList.add("is-visible");
+            io.unobserve(en.target);
+          }
+        });
+      },
       { threshold: 0.15 }
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
 
-  // Jump handler
   const jumpTo = (i: number) => {
     sectionRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -299,7 +455,7 @@ export default function ExplorePage() {
       {/* HERO */}
       <section className="relative min-h-[62vh] grid place-items-center py-20 md:py-24 text-white">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          {/* PATH ABOVE SUBTITLE */}
+          {/* Top path mini-nav */}
           <nav aria-label="Path" className="mx-auto mb-6 flex items-center justify-center gap-2 md:gap-3">
             {steps.map((s, i) => (
               <button
@@ -328,12 +484,10 @@ export default function ExplorePage() {
             ))}
           </nav>
 
-          {/* Subheading */}
           <p className="uppercase tracking-[0.2em] text-amber-200/90 text-sm md:text-base">
             A journey in five sips
           </p>
 
-          {/* Title with ® */}
           <h1 className="mt-3 text-4xl md:text-6xl font-extrabold drop-shadow">
             Explore Bean{" "}
             <span className="relative inline-flex">
@@ -352,64 +506,22 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      {/* PATH / STEPS (identical layout: text → image → CTAs) */}
+      {/* PATH / STEPS */}
       <section id="path" className="relative text-white">
-        <div className="mx-auto max-w-6xl px-4 md:px-6 space-y-20 md:space-y-24">
+        <div className="mx-auto max-w-6xl px-4 md:px-6 space-y-10 md:space-y-14">
           {steps.map((s, i) => (
-            <section
+            <StepSection
               key={s.id}
-              id={s.id}
-              ref={(el) => { sectionRefs.current[i] = el; }}
-              data-idx={i}
-              className="scroll-mt-28"
-            >
-              {/* TEXT */}
-              <div data-reveal className="reveal">
-                <div className="inline-flex items-center gap-2">
-                  <StepBadge n={s.n} />
-                  <span className="text-amber-200/90 font-semibold">Step {s.n}</span>
-                </div>
-                <h2 className="mt-3 text-2xl md:text-3xl font-extrabold">{s.title}</h2>
-                <p className="mt-3 text-orange-50/95 leading-relaxed">{s.text}</p>
-              </div>
-
-              {/* IMAGE (fixed aspect; not stretched) */}
-              <div
-                data-reveal
-                className="reveal mt-6 relative w-full aspect-[16/10] md:aspect-[21/9] max-h-[520px] rounded-3xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_18px_54px_rgba(0,0,0,.35)] group"
-              >
-                <Image
-                  src={s.img}
-                  alt={s.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  priority={i < 2}
-                />
-                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-transparent via-transparent to-white/10" />
-              </div>
-
-              {/* CTAs */}
-              {!!s.ctas.length && (
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {s.ctas.map((c) =>
-                    c.onClick ? (
-                      <Press3DButton key={c.label} href="#" onClick={c.onClick}>
-                        {c.label}
-                      </Press3DButton>
-                    ) : (
-                      <Link key={c.label} href={c.href!} className="inline-block">
-                        <Press3DButton>{c.label}</Press3DButton>
-                      </Link>
-                    )
-                  )}
-                </div>
-              )}
-            </section>
+              step={s}
+              index={i}
+              sectionRef={(el) => { sectionRefs.current[i] = el; }}
+              {...(s.id === "step-3" ? { childrenMedia: <CafeCollage /> } : {})}
+            />
           ))}
         </div>
       </section>
 
-      {/* MOBILE MINI-MAP (floating pill) */}
+      {/* MOBILE MINI-MAP (floating) */}
       <nav
         aria-label="Path (mobile)"
         className="md:hidden fixed bottom-3 inset-x-0 z-[95] flex items-center justify-center"
@@ -439,7 +551,7 @@ export default function ExplorePage() {
       {/* OUTRO */}
       <section className="relative py-20 md:py-28 text-white">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h3 className="text-3xl md:text-4xl font-extrabold drop-shadow">Join the Movement</h3>
+          <h3 className="text-3xl md:4xl font-extrabold drop-shadow">Join the Movement</h3>
           <p className="mt-3 text-orange-50/95">Connect to your tribe, support farmers, and earn rewards for doing good.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/connect" className="inline-block">
@@ -449,7 +561,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      {/* Desktop QR modal for get‑app */}
+      {/* Desktop QR modal for get-app */}
       {!isProbablyMobile() && <QrModal open={qrOpen} onClose={() => setQrOpen(false)} />}
 
       {/* Local styles */}
