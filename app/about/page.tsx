@@ -44,6 +44,7 @@ export default function AboutPage() {
     { name: "Strathmore University", img: "/images/strathmore.png", desc: "Leading not-for-profit university in Kenya with 4,500+ students." },
     { name: "NEMA", img: "/images/nema.png", desc: "Government instrument for environmental policy implementation in Kenya." },
     { name: "Stanbic Bank", img: "/images/stanbic (1).png", desc: "Financial services provider in Kenya with subsidiaries across Africa." },
+    { name: "e-mot", img: "/images/e-mot.jpeg", desc: "Electricity on the go" },
   ];
 
   const internationalPartners = [
