@@ -95,7 +95,7 @@ export default function FaceOfBeanYouPage() {
           title: "Spotlight • Vivian",
           desc:
             "Courage, culture, community. Applicants submission.",
-          video: "/videos/Vivian.mov", // local video; modal includes MP4 fallback
+          video: "/videos/Vivian.mp4", // local video; modal includes MP4 fallback
           cta: "🎥 Watch",
         },
         {
@@ -236,7 +236,7 @@ export default function FaceOfBeanYouPage() {
                 const isApplicants = filter === "applicants";
                 // try to provide an MP4 fallback path if the video is .mov
                 const mp4Fallback =
-                  c.video && /\.mov$/i.test(c.video) ? c.video.replace(/\.mov$/i, ".mp4") : undefined;
+                  c.video && /\.mov$/i.test(c.video) ? c.video.replace(/\.mov$/i, "Vivian.mp4") : undefined;
 
                 return (
                   <div
@@ -333,7 +333,7 @@ export default function FaceOfBeanYouPage() {
                       <source src={videoUrl} type={/\.mov$/i.test(videoUrl) ? "video/quicktime" : "video/mp4"} />
                       {/* Optional MP4 fallback if a .mov URL is used and an .mp4 exists at the same path */}
                       { /\.mov$/i.test(videoUrl) && (
-                        <source src={videoUrl.replace(/\.mov$/i, ".mp4")} type="video/mp4" />
+                        <source src={videoUrl.replace(/\.mov$/i, "Vivian.mp4")} type="video/mp4" />
                       ) }
                       Your browser does not support the video tag.
                     </video>
