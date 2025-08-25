@@ -37,19 +37,27 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Content grid — mobile-first */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Legal */}
+        {/* Content grid — 3 groups on mobile/desktop */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Legal (includes Terms, Privacy, FAQ, Jobs) */}
           <Section title="Legal">
             <ul className="space-y-3">
-              <li>
+              <li className="flex items-center gap-3">
                 <button
                   onClick={() => setTermsOpen(true)}
                   className="group inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:text-orange-200 focus:outline-none focus:ring-2 focus:ring-white/40"
                 >
-                  <Dot /> Terms of Use
+                  <Dot /> Quick view: Terms of Use
                 </button>
+                <span className="text-white/40">•</span>
+                <Link
+                  href="app/legal/terms.tsx"
+                  className="inline-flex items-center gap-2 rounded-lg px-2 py-1 underline decoration-white/30 underline-offset-4 hover:text-orange-200"
+                >
+                  Read full Terms
+                </Link>
               </li>
+
               <li>
                 <button
                   onClick={() => setPrivacyOpen(true)}
@@ -58,13 +66,31 @@ export default function Footer() {
                   <Dot /> Privacy Policy
                 </button>
               </li>
+
+              <li>
+                <button
+                  onClick={() => setFaqOpen(true)}
+                  className="group inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:text-orange-200 focus:outline-none focus:ring-2 focus:ring-white/40"
+                >
+                  <Dot /> FAQ
+                </button>
+              </li>
+
+              <li>
+                <button
+                  onClick={() => setJobsOpen(true)}
+                  className="group inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:text-orange-200 focus:outline-none focus:ring-2 focus:ring-white/40"
+                >
+                  <Dot /> Jobs
+                </button>
+              </li>
             </ul>
           </Section>
 
           {/* Franchise */}
           <Section title="Franchise">
             <p className="text-white/85">
-              Bean You is franchising our cafes with initial target markets being
+              Bean You® is franchising our cafes with initial target markets being
               Kenya, UK, China, Brazil, USA and France.
             </p>
             <p className="mt-2">
@@ -86,34 +112,12 @@ export default function Footer() {
               <ContactItem label="Support" email="support@beanyou.com" />
             </ul>
           </Section>
-
-          {/* More */}
-          <Section title="More">
-            <ul className="space-y-3">
-              <li>
-                <button
-                  onClick={() => setFaqOpen(true)}
-                  className="group inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:text-orange-200 focus:outline-none focus:ring-2 focus:ring-white/40"
-                >
-                  <Dot /> FAQ
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setJobsOpen(true)}
-                  className="group inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:text-orange-200 focus:outline-none focus:ring-2 focus:ring-white/40"
-                >
-                  <Dot /> Jobs
-                </button>
-              </li>
-            </ul>
-          </Section>
         </div>
 
         {/* Divider */}
         <div className="my-8 sm:my-10 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-        {/* Bottom row (no frosted/glass words) */}
+        {/* Bottom row */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-white/80">
           <div>© Bean You® 2025</div>
           <div className="opacity-80">
@@ -122,20 +126,27 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ---- Modals ---- */}
-      <Modal open={termsOpen} onClose={() => setTermsOpen(false)} title="Terms of Use">
-        <div className="space-y-4 text-sm leading-6 text-white/90">
-          {/* ======= REPLACE THIS BLOCK IN VS CODE ======= */}
-          <p className="font-semibold">
-            LOREM IPSUM — MARKED FOR REPLACEMENT
+      {/* ---- Modals (trimmed content) ---- */}
+      <Modal open={termsOpen} onClose={() => setTermsOpen(false)} title="Terms of Use — Quick View">
+        <div className="space-y-3 text-sm leading-6 text-white/90">
+          <p className="font-semibold">Summary (short):</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Use of the Bean You® website, app, and services is subject to acceptable use and local laws.</li>
+            <li>Content and brand assets are protected; do not copy or misuse.</li>
+            <li>Accounts must be accurate; you are responsible for activity under your login.</li>
+            <li>We may update features and policies to keep users safe and compliant.</li>
+          </ul>
+          <p className="pt-2">
+            For the full, binding Terms please read the complete document.
           </p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras
-            dignissim, nibh ac fermentum facilisis, velit lorem malesuada
-            mauris, sed convallis arcu purus id mauris. (REPLACE THIS ENTIRE
-            TERMS SECTION WITH YOUR OFFICIAL TEXT.)
-          </p>
-          {/* ======= END REPLACEMENT BLOCK ======= */}
+          <div className="pt-1">
+            <Link
+              href="components/terms.tsx"
+              className="inline-flex items-center rounded-full bg-white/10 px-4 py-2 text-sm underline decoration-white/30 underline-offset-4 hover:bg-white/15"
+            >
+              Read full Terms
+            </Link>
+          </div>
         </div>
       </Modal>
 
@@ -174,74 +185,69 @@ export default function Footer() {
       </Modal>
 
       <Modal open={faqOpen} onClose={() => setFaqOpen(false)} title="BUY ESG — FAQ">
-        {/* “Click to open more info” style accordion */}
         <div className="text-sm text-white/90">
-         <p className="mb-4">
-  Through livestreams and symbolic ‘adoption’ of coffee plots, you witness the life cycle of your coffee bean and the people behind it. It’s not entertainment, it’s consumption turning into connection.
-</p>
-
+          <p className="mb-4">
+            Through livestreams and symbolic &lsquo;adoption&rsquo; of coffee plots, you witness the life cycle of your coffee bean and the people behind it. It&rsquo;s not entertainment, it&rsquo;s consumption turning into connection.
+          </p>
 
           <FaqItem q="1. What is iRWA (intangible Real World Assets)?">
-            We connect Bean You® customers worldwide to coffee farmers in Kenya. We have created a digital twin of all our farms and broken the land into 1m2 plots, equivalent to one coffee crop. We encourage our audience to connect to our 1m2 coffee plots which carry a number of rights and privileges which they can benefit from.
+            We connect Bean You® customers worldwide to coffee farmers in Kenya. We have created a digital twin of all our farms and broken the land into 1m² plots, equivalent to one coffee crop. We encourage our audience to connect to our 1m² coffee plots which carry rights and privileges they can benefit from.
           </FaqItem>
 
-          <FaqItem q="2. What’s in it for me?">
-  <p className="mb-3">
-    As a Bean You® supporter you gain both tangible and intangible value. 
-    We separate them into <strong>Hard Benefits</strong> and <strong>Soft Benefits</strong>.
-  </p>
+          <FaqItem q="2. What&rsquo;s in it for me?">
+            <p className="mb-3">
+              You gain both tangible and intangible value. We group these into <strong>Hard Benefits</strong> and <strong>Soft Benefits</strong>.
+            </p>
 
-  {/* Hard Benefits */}
-  <details className="group mb-3 rounded-lg border border-white/10 bg-white/5 p-3 open:mb-4">
-    <summary className="flex cursor-pointer items-center justify-between text-white/95 hover:text-orange-200">
-      <span className="font-medium">Hard Benefits</span>
-      <span className="shrink-0 rounded-md px-2 py-0.5 text-[10px] ring-1 ring-white/20 group-open:rotate-45 transition">
-        +
-      </span>
-    </summary>
-    <ul className="mt-3 list-disc pl-5 space-y-2 text-[13px] text-white/90 leading-6">
-      <li>Direct ESG ownership in 1m² coffee crop plots.</li>
-      <li>Early access to rare and appreciating coffee plot rights.</li>
-      <li>Ability to trade or transfer ESG entitlements in the future.</li>
-      <li>Transparency and traceability of your coffee’s lifecycle.</li>
-    </ul>
-  </details>
+            <details className="group mb-3 rounded-lg border border-white/10 bg-white/5 p-3 open:mb-4">
+              <summary className="flex cursor-pointer items-center justify-between text-white/95 hover:text-orange-200">
+                <span className="font-medium">Hard Benefits</span>
+                <span className="shrink-0 rounded-md px-2 py-0.5 text-[10px] ring-1 ring-white/20 group-open:rotate-45 transition">+</span>
+              </summary>
+              <ul className="mt-3 list-disc pl-5 space-y-2 text-[13px] leading-6">
+                <li>Direct ESG ownership in 1m² coffee crop plots.</li>
+                <li>Early access to rare and appreciating coffee plot rights.</li>
+                <li>Potential to transfer ESG entitlements in the future.</li>
+                <li>Traceability of your coffee&rsquo;s lifecycle.</li>
+              </ul>
+            </details>
 
-  {/* Soft Benefits */}
-  <details className="group rounded-lg border border-white/10 bg-white/5 p-3">
-    <summary className="flex cursor-pointer items-center justify-between text-white/95 hover:text-orange-200">
-      <span className="font-medium">Soft Benefits</span>
-      <span className="shrink-0 rounded-md px-2 py-0.5 text-[10px] ring-1 ring-white/20 group-open:rotate-45 transition">
-        +
-      </span>
-    </summary>
-    <ul className="mt-3 list-disc pl-5 space-y-2 text-[13px] text-white/90 leading-6">
-      <li>Personal connection to coffee farmers and their families.</li>
-      <li>Contribution to health, education, and technology initiatives.</li>
-      <li>Emotional ownership — turning consumption into connection.</li>
-      <li>Community belonging with other Bean You® adopters worldwide.</li>
-    </ul>
-  </details>
-</FaqItem>
+            <details className="group rounded-lg border border-white/10 bg-white/5 p-3">
+              <summary className="flex cursor-pointer items-center justify-between text-white/95 hover:text-orange-200">
+                <span className="font-medium">Soft Benefits</span>
+                <span className="shrink-0 rounded-md px-2 py-0.5 text-[10px] ring-1 ring-white/20 group-open:rotate-45 transition">+</span>
+              </summary>
+              <ul className="mt-3 list-disc pl-5 space-y-2 text-[13px] leading-6">
+                <li>Personal connection to coffee farmers and their families.</li>
+                <li>Contribute to health, education and technology initiatives.</li>
+                <li>Emotional ownership &mdash; turning consumption into connection.</li>
+                <li>Community belonging with Bean You® adopters worldwide.</li>
+              </ul>
+            </details>
+          </FaqItem>
 
           <FaqItem q="3. What is the Process?">
-            ESG investors can select which farm, zoom into 1m2 plot(s), through our website and App through the touch of a button, and purchase the ESG rights.
+            ESG investors can select which farm, zoom into 1m² plot(s) through our website and App at the touch of a button, and purchase the ESG rights.
           </FaqItem>
 
           <FaqItem q="4. How much do I Pay?">
-            You pay as little as 500 KSH (less than US$ 4) making it attainable to our mainstream audience and at little risk. Over time the price will increase due to the rarity of the available crops so we encourage you to act quickly.
+            You pay as little as 500 KSH (less than US$ 4). Over time the price may increase due to rarity of available crops, so we encourage you to act quickly.
           </FaqItem>
 
           <FaqItem q="5. How do I Pay?">
-            Zooming in on the website or mobile you can select and pay using KSH, credit/debit cards, MPesa and cryptocurrency.
+            On the website or mobile you can select and pay using KSH, credit/debit cards, MPesa and cryptocurrency.
           </FaqItem>
 
           <FaqItem q="6. Where does my money go?">
-            Your donation, less costs, goes to the Asili Foundation, a not-for-profit ESG organisation registered in Kenya with a Board of Trustees that distribute funds to farmers helping in health, education and technology.
+            Your donation, less costs, goes to the Asili Foundation, a not-for-profit ESG organisation registered in Kenya with a Board of Trustees that distribute funds to farmers for health, education and technology.
           </FaqItem>
 
           <FaqItem q="7. Can I get support?">
-            Email us at <a className="underline decoration-white/30 underline-offset-4 hover:text-orange-200" href="mailto:support@beanyou.com">support@beanyou.com</a> and we will respond within 24 hours.
+            Email us at{" "}
+            <a className="underline decoration-white/30 underline-offset-4 hover:text-orange-200" href="mailto:support@beanyou.com">
+              support@beanyou.com
+            </a>{" "}
+            and we will respond within 24 hours.
           </FaqItem>
         </div>
       </Modal>
@@ -312,7 +318,6 @@ function Modal({
   );
 }
 
-/* Accordion-ish FAQ item using <details> for great a11y + mobile UX */
 function FaqItem({ q, children }: { q: string; children: React.ReactNode }) {
   return (
     <details className="group rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4 ring-1 ring-white/10 backdrop-blur-md mb-3 open:mb-4">
@@ -330,7 +335,7 @@ function FaqItem({ q, children }: { q: string; children: React.ReactNode }) {
   );
 }
 
-/* ---------- Icons (inline SVG) ---------- */
+/* ---------- Icons ---------- */
 
 function BeanIcon({ className = "" }: { className?: string }) {
   return (

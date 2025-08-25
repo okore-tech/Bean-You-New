@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import SmartGetAppButton from "components/SmartGetAppButton"; // <-- add this import
 
 /* ─────────────────────────────────────────────
    Tiny helpers (no deps)
@@ -123,7 +124,7 @@ function QrModal({
             data-close
             onClick={onClose}
             className="rounded-full p-2 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-300"
-            aria-label="Close dialog"
+            aria-label="Close"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 8.586l4.95-4.95 1.414 1.414L11.414 10l4.95 4.95-1.414 1.414L10 11.414l-4.95 4.95-1.414-1.414L8.586 10l-4.95-4.95L5.05 3.636z" />
@@ -179,6 +180,7 @@ const CAFE_PHOTOS: CafePhoto[] = [
   { src: "/images/cafe7.jpg", alt: "Bean You® café — facade" },
   { src: "/images/cafe1.png", alt: "Bean You® café — outdoor seating" },
   { src: "/images/cafe3.png", alt: "Bean You® café — evening ambience" },
+  { src: "/images/cafe9.png", alt: "Bean You® café — style" },
 ];
 
 function CafeCollage() {
@@ -226,7 +228,7 @@ function CafeCollage() {
           <button
             onClick={() => scrollBy(1)}
             aria-label="Next café"
-            className="pointer-events-auto rounded-full bg-white/15 hover:bg-white/25 p-2 backdrop-blur border border-white/20"
+            className="pointer-events-auto rounded-full bg白e/15 hover:bg-white/25 p-2 backdrop-blur border border-white/20"
           >
             ›
           </button>
@@ -256,7 +258,7 @@ function CafeCollage() {
 
       {/* Underline message */}
       <p className="mt-4 text-center text-orange-50/95 text-sm md:text-base">
-        stores are to be opened in many major cities and towns around the world.
+        Stores are to be opened in many major cities and towns around the world.
       </p>
     </div>
   );
@@ -317,8 +319,10 @@ function StepSection({
         {/* CTAs (none for step 3) */}
         {!!(step.ctas?.length && step.id !== "step-3") && (
           <div data-reveal className="reveal mt-5 flex flex-wrap gap-3">
-            {step.ctas!.map((c) =>
-              c.onClick ? (
+            {step.ctas!.map((c, i) =>
+              /get the app/i.test(c.label) ? (
+                <SmartGetAppButton key={`get-app-${i}`} /> // <-- use shared component
+              ) : c.onClick ? (
                 <Press3DButton key={c.label} href="#" onClick={c.onClick}>
                   {c.label}
                 </Press3DButton>
@@ -371,7 +375,7 @@ export default function ExplorePage() {
       {
         id: "step-3",
         n: "3",
-        title: "Meet IRL in Our Cafés",
+        title: "Meet In Real Life (IRL) in Our Cafés",
         text: "We’re rolling out 10,000 cafés worldwide. Enjoy a free cup, meet your tribe, and grow together.",
         // media via <CafeCollage/>, no CTAs here
       },

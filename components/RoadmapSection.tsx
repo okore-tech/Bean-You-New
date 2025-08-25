@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import SmartGetAppButton from '@/components/SmartGetAppButton'; // ⬅️ ADDED
 
 type Item = {
   imgSrc: string;
@@ -287,7 +288,7 @@ export default function RoadmapSection() {
     () => [
       {
         imgSrc: '/images/genz.png',
-        imgAlt: 'Gen‑Z community engaging with Bean You',
+        imgAlt: 'Gen-Z community engaging with Bean You',
         titleEyebrow: 'Timeline',
         title: 'Our Journey',
         body:
@@ -411,9 +412,8 @@ useEffect(() => {
           {item.cta && (
             <>
               {item.cta.onClick ? (
-                <Press3DButton href={item.cta.href} onClick={item.cta.onClick}>
-                  {item.cta.label}
-                </Press3DButton>
+                // ⬇️ USE SMART BUTTON ONLY FOR "Get to App" (onClick-based CTA)
+                <SmartGetAppButton label={item.cta.label} />
               ) : item.cta.external ? (
                 <Press3DButton
                   href={item.cta.href}
