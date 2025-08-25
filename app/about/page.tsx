@@ -51,10 +51,12 @@ export default function AboutPage() {
     { name: "CCEG Blockchain UN lab", img: "/images/partnerblockchain.png", desc: "Global 4IR collaborator." },
     { name: "AITEA ", img: "/images/hovername.png", desc: "AI / Web3 specialist." },
     { name: "MiValues", img: "/images/mivalues.jpg", desc: "Blockchain & ESG tooling." },
-     { name: "MiMeta", img: "/images/mimeta.jpg", desc: "Blockchain & ESG tooling." },
-  { name: "Aiza World", img: "/images/aiza.png", desc: "Blockchain & ESG tooling." },
-{ name: "Cyber Future", img: "/images/partner4.png", desc: "Blockchain & ESG tooling." },
-{ name: "Citizenship Enterprise and Governance", img: "/images/partner5.png", desc: "Blockchain & ESG tooling." },
+    { name: "MiMeta", img: "/images/mimeta.jpg", desc: "Blockchain & ESG tooling." },
+    { name: "Aiza World", img: "/images/aiza.png", desc: "Blockchain & ESG tooling." },
+    { name: "Cyber Future", img: "/images/partner4.png", desc: "Blockchain & ESG tooling." },
+    { name: "Citizenship Enterprise and Governance", img: "/images/partner5.png", desc: "Blockchain & ESG tooling." },
+    { name: "Efiiciency Exchange", img: "/images/Picture8.jpg", desc: "Efficiency exchange." },
+    { name: "CECBC", img: "/images/partner20.jpg", desc: "CECBC." },
 ];
   return (
     <main className={`${poppins.className} text-white overflow-x-hidden`} style={{ backgroundColor: "#652B06" }}>
