@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 
-type Tab = "music" | "tech" | "applicants";
+type Tab = "Ambassador" | "tech" | "applicants";
 
 type Card = {
   img: string;
@@ -36,7 +36,7 @@ export default function FaceOfBeanYouPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [isYT, setIsYT] = useState(false);
-  const [filter, setFilter] = useState<Tab>("music");
+  const [filter, setFilter] = useState<Tab>("Ambassador");
 
   useEffect(() => {
     (async () => {
@@ -56,13 +56,21 @@ export default function FaceOfBeanYouPage() {
 
   const cards = useMemo<Record<Tab, Card[]>>(
     () => ({
-      music: [
+      Ambassador: [
         {
           img: "/images/Kevin.jpg",
           title: "Kevin Mills • Musician",
           desc: "Afro-futuristic rhythms born of soul and steam.",
           video: "https://youtu.be/h517KvsUmX0",
           cta: "🎥 Watch Video",
+        },
+        {
+          img: "/images/Anne.jpeg",
+          title: "Spotlight • Anne",
+          desc:
+            "Courage, culture, community. Applicants submission.",
+          href: "#contact",
+          cta: "✉️ Message the Team",
         },
         {
           img: "/images/band.png",
@@ -98,15 +106,6 @@ export default function FaceOfBeanYouPage() {
           video: "/videos/Vivian.mp4", // local video; modal includes MP4 fallback
           cta: "🎥 Watch",
         },
-{
-          img: "/images/Anne.jpeg",
-          title: "Spotlight • Anne",
-          desc:
-            "Courage, culture, community. Applicants submission.",
-          href: "#contact",
-          cta: "✉️ Message the Team",
-        },
-
         {
           img: "/images/community.jpg",
           title: "Your Turn • Send a Message",
@@ -266,7 +265,7 @@ export default function FaceOfBeanYouPage() {
                     {/* badge */}
                     {isApplicants && (
                       <span
-                        className={`absolute left-4 top-0 z-10 rounded-full px-3 py-1 text-xs font-bold text-white shadow ${
+                        className={`absolute left-4 top-4 z-10 rounded-full px-3 py-1 text-xs font-bold text-white shadow ${
                           idx === 0 ? "bg-orange-600" : "bg-emerald-600"
                         }`}
                       >

@@ -55,7 +55,7 @@ export default function Footer() {
                   href="/legal/terms"
                   className="inline-flex items-center gap-2 rounded-lg px-2 py-1 underline decoration-white/30 underline-offset-4 hover:text-orange-200"
                 >
-                  Read full Terms
+                  Read Full Terms
                 </Link>
               </li>
 
@@ -154,7 +154,7 @@ export default function Footer() {
               href="/legal/terms"
               className="inline-flex items-center rounded-full bg-white/10 px-4 py-2 text-sm underline decoration-white/30 underline-offset-4 hover:bg-white/15"
             >
-              Read full Terms
+              Read Full Terms
             </Link>
           </div>
         </div>

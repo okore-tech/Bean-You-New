@@ -57,7 +57,8 @@ export default function AboutPage() {
     { name: "Citizenship Enterprise and Governance", img: "/images/partner5.png", desc: "Blockchain & ESG tooling." },
     { name: "Efiiciency Exchange", img: "/images/Picture8.jpg", desc: "Efficiency exchange." },
     { name: "CECBC", img: "/images/partner20.jpg", desc: "CECBC." },
-];
+  ];
+
   return (
     <main className={`${poppins.className} text-white overflow-x-hidden`} style={{ backgroundColor: "#652B06" }}>
       {/* HERO */}
@@ -73,39 +74,78 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* Cups & Buttons */}
-          <div
-            className="md:w-1/2 flex flex-col sm:flex-row gap-6 items-center justify-center order-2 md:order-none"
-            data-aos="fade-left"
-          >
-            <div className="flex flex-col items-center">
-              <img src="/images/first.png" className="w-20 h-20 rounded-full shadow-lg" alt="" loading="lazy" />
-              <a
-                href="#directors"
-                className="mt-2 bg-[#F3B019] text-[#793A17] px-4 py-1 rounded-full text-sm font-semibold hover:scale-105 transition"
-              >
-                Directors
-              </a>
-                </div>
-            <div className="flex flex-col items-center">
-              <img src="/images/second.png" className="w-20 h-20 rounded-full shadow-lg" alt="" loading="lazy" />
-              <a
-                href="#non-executives"
-                className="mt-2 bg-[#F3B019] text-[#793A17] px-4 py-1 rounded-full text-sm font-semibold hover:scale-105 transition"
-              >
-                Non‑Executives
-              </a>
-                </div>
-            <div className="flex flex-col items-center">
-              <img src="/images/last.png" className="w-20 h-20 rounded-full shadow-lg" alt="" loading="lazy" />
-              <a
-                href="#partners"
-                className="mt-2 bg-[#F3B019] text-[#793A17] px-4 py-1 rounded-full text-sm font-semibold hover:scale-105 transition"
-              >
-                Partners
-              </a>
-            </div>
-          </div>
+{/* Cups & Buttons — hard-aligned baseline, no white discs */}
+<div className="md:w-1/2 order-2 md:order-none" data-aos="fade-left">
+  <div className="flex items-end justify-center gap-8 sm:gap-10">
+
+    {/* Cup 1 — lowered 10px, shift content down a bit */}
+    <div className="flex flex-col items-center">
+      <div
+        className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden"
+        style={{ transform: "translateY(10px)" }}     // ↓ lower
+      >
+        <img
+          src="/images/first.png"
+          alt="Directors cup"
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover rounded-full"
+          style={{ objectPosition: "50% 0%" }}       // push visible area down a touch
+        />
+      </div>
+      <a
+        href="#directors"
+        className="mt-3 bg-[#F3B019] text-[#793A17] px-4 py-1 rounded-full text-sm font-semibold hover:scale-105 transition"
+      >
+        Directors
+      </a>
+    </div>
+
+    {/* Cup 2 — lowered 12px, shift content down a bit more */}
+    <div className="flex flex-col items-center">
+      <div
+        className="relative w-full h-full md:w-28 md:h-28 rounded-full overflow-hidden"
+        style={{ transform: "translateY(12px)" }}     // ↓ lower slightly more
+      >
+        <img
+          src="/images/second.png"
+          alt="Non-Executives cup"
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover rounded-full"
+          style={{ objectPosition: "50% 0%" }}       // push visible area down a bit more
+        />
+      </div>
+      <a
+        href="#non-executives"
+        className="mt-3 bg-[#F3B019] text-[#793A17] px-4 py-1 rounded-full text-sm font-semibold hover:scale-105 transition"
+      >
+        Non-Executives
+      </a>
+    </div>
+
+    {/* Cup 3 — reference height (no lowering) */}
+    <div className="flex flex-col items-center">
+      <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden">
+        <img
+          src="/images/last.png"
+          alt="Partners cup"
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover rounded-full"
+          style={{ objectPosition: "50% 30%" }}
+        />
+      </div>
+      <a
+        href="#partners"
+        className="mt-3 bg-[#F3B019] text-[#793A17] px-4 py-1 rounded-full text-sm font-semibold hover:scale-105 transition"
+      >
+        Partners
+      </a>
+    </div>
+
+  </div>
+</div>
+
+
+
         </div>
       </section>
 
@@ -204,7 +244,7 @@ export default function AboutPage() {
           <h3 className="mt-12 mb-4 text-xl font-semibold text-[#5c2c16]">International Partners</h3>
           <PartnerGallery
             items={internationalPartners}
-            tagForName="AITEA" /* small tag only on the partner whose name contains AITEA */
+            tagForName="AITEA"
           />
         </div>
       </section>
@@ -223,10 +263,118 @@ export default function AboutPage() {
           .animated-text { border-right: none; animation: none; }
           [data-aos] { transition: none !important; animation: none !important; }
         }
+
+        /* ===== Cup styling (ceramic rim + gloss, perfect circles, aligned) ===== */
+        .cup-outer {
+          display: inline-block;
+          width: 96px;
+          height: 96px;
+          border-radius: 9999px;
+          position: relative;
+          background: radial-gradient(120% 120% at 30% 30%, #ffffff 0%, #f6f2ee 45%, #e7ded8 100%);
+          box-shadow:
+            0 6px 14px rgba(0,0,0,0.25),
+            inset 0 2px 4px rgba(255,255,255,0.55),
+            inset 0 -2px 6px rgba(0,0,0,0.08);
+          border: 1px solid rgba(255,255,255,0.35);
+          outline: 1px solid rgba(0,0,0,0.05);
+          overflow: hidden;
+        }
+        .cup-outer::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(60% 40% at 30% 25%, rgba(255,255,255,0.55), transparent 60%),
+            radial-gradient(80% 60% at 70% 80%, rgba(255,255,255,0.08), transparent 70%);
+          pointer-events: none;
+          mix-blend-mode: screen;
+        }
+        .cup-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          object-position: center;
+          transform: translateZ(0);
+        }
+        .cup-outer:hover {
+          transform: translateY(-2px);
+          transition: transform 180ms ease;
+        }
       `}</style>
     </main>
   );
 }
+
+/* === Small reusable cup+link component === */
+function CupLink({
+  href,
+  label,
+  img,
+  alt,
+  nudgeY = 0,            // pixels to push cup down (+) or up (-)
+  objectPosition = "50% 50%",
+}: {
+  href: string;
+  label: string;
+  img: string;
+  alt: string;
+  nudgeY?: number;
+  objectPosition?: string;
+}) {
+  return (
+    <div className="flex flex-col items-center">
+      {/* Fixed-size circle with true baseline alignment */}
+      <div
+        className="relative block w-24 h-24 md:w-28 md:h-28 rounded-full shadow-lg ring-1 ring-white/30"
+        style={{
+          transform: `translateY(${nudgeY}px)`,
+          boxShadow:
+            "0 10px 20px rgba(0,0,0,.35), inset 0 -8px 18px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.35)",
+        }}
+      >
+        {/* Cup image (no white disc, full bleed) */}
+        <img
+          src={img}
+          alt={alt}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover rounded-full block"
+          style={{ objectPosition }}
+        />
+
+        {/* Gloss highlight */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 30% 22%, rgba(255,255,255,.65) 0%, rgba(255,255,255,.28) 26%, rgba(255,255,255,0) 46%)",
+            mixBlendMode: "screen",
+          }}
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 38%)",
+          }}
+        />
+      </div>
+
+      {/* Label */}
+      <a
+        href={href}
+        className="mt-3 bg-[#F3B019] text-[#793A17] px-4 py-1 rounded-full text-sm font-semibold hover:scale-105 transition"
+      >
+        {label}
+      </a>
+    </div>
+  );
+}
+
+
+
 
 /* ========= Technology Section ========= */
 function TechnologySection() {
@@ -252,55 +400,55 @@ function TechnologySection() {
           <div className="grid sm:grid-cols-2 gap-4" data-aos="fade-right">
             {[
               {
-              title: "4IR Partners",
-              subtitle: "AI • Blockchain • IoT • 5G • Web3",
-              details: "Onboarded in 2024; 15-month collaboration powering ESG tech for Bean You® and pilot farms at Asili Coffee Estates.",
-              chips: ["China", "Vietnam", "Switzerland", "Portugal", "UK", "USA"],
+                title: "4IR Partners",
+                subtitle: "AI • Blockchain • IoT • 5G • Web3",
+                details: "Onboarded in 2024; 15-month collaboration powering ESG tech for Bean You® and pilot farms at Asili Coffee Estates.",
+                chips: ["China", "Vietnam", "Switzerland", "Portugal", "UK", "USA"],
               },
               {
-              title: "SER & Whitepapers",
-              subtitle: "Centre for Citizenship, Enterprise & Governance",
-              details: "Social Earnings Ratio® measures social impact using sentiment analysis. Developed since 2011; 16th paper in 2024; 220k+ community.",
-              link: { href: "https://ccegblockchain.com/white-papers/", label: "CCEG White Papers" },
+                title: "SER & Whitepapers",
+                subtitle: "Centre for Citizenship, Enterprise & Governance",
+                details: "Social Earnings Ratio® measures social impact using sentiment analysis. Developed since 2011; 16th paper in 2024; 220k+ community.",
+                link: { href: "https://ccegblockchain.com/white-papers/", label: "CCEG White Papers" },
               },
               {
-              title: "Tokens & Points",
-              subtitle: "ETH (SER) • ETC (MCR)",
-              details: "Bean You® financial token (derivative of SER) value linked to measurable social impact for farms & farmers. Bean You Points (derivative of MCR) are rewarded for positive actions and can be redeemed for rewards directly in the Bean You app with participating retailers.",
+                title: "Tokens & Points",
+                subtitle: "ETH (SER) • ETC (MCR)",
+                details: "Bean You® financial token (derivative of SER) value linked to measurable social impact for farms & farmers. Bean You Points (derivative of MCR) are rewarded for positive actions and can be redeemed for rewards directly in the Bean You app with participating retailers.",
               },
               {
-              title: "Bean You® Token",
-              subtitle: "IoT • 5G • Tokenization",
-              details: "After 3 months, once we measure the project's social impact on farms and farmers, we'll issue Solana-based tokens to your App (lower gas fees). These tokens can be tracked and transacted within the App.",
+                title: "Bean You® Token",
+                subtitle: "IoT • 5G • Tokenization",
+                details: "After 3 months, once we measure the project's social impact on farms and farmers, we'll issue Solana-based tokens to your App (lower gas fees). These tokens can be tracked and transacted within the App.",
               },
             ].map((card) => (
               <article key={card.title} className="group relative overflow-hidden rounded-3xl border border-white/15 bg-white/10 backdrop-blur-lg p-5 shadow-[0_14px_44px_rgba(0,0,0,.35)]" tabIndex={0}>
-              <h3 className="text-xl font-bold text-white">{card.title}</h3>
-              <p className="mt-1 text-sm text-yellow-100/90">{card.subtitle}</p>
-              {"chips" in card && (
-                <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-yellow-100/90">
-                {(card as any).chips.map((c: string) => (
-                  <span key={c} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/15">{c}</span>
-                ))}
+                <h3 className="text-xl font-bold text-white">{card.title}</h3>
+                <p className="mt-1 text-sm text-yellow-100/90">{card.subtitle}</p>
+                {"chips" in card && (
+                  <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-yellow-100/90">
+                    {(card as any).chips.map((c: string) => (
+                      <span key={c} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/15">{c}</span>
+                    ))}
+                  </div>
+                )}
+                {"link" in card && (card as any).link && (
+                  <a
+                    href={(card as any).link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-3 text-sm underline underline-offset-4 text-yellow-200 hover:text-yellow-100"
+                  >
+                    {(card as any).link.label}
+                  </a>
+                )}
+                {/* blocking hover overlay */}
+                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300" aria-hidden="true">
+                  <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
+                  <div className="absolute inset-0 flex items-center justify-center p-5">
+                    <p className="text-[13px] text-white leading-relaxed text-center">{card.details}</p>
+                  </div>
                 </div>
-              )}
-              {"link" in card && (card as any).link && (
-                <a
-                href={(card as any).link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-3 text-sm underline underline-offset-4 text-yellow-200 hover:text-yellow-100"
-                >
-                {(card as any).link.label}
-                </a>
-              )}
-              {/* blocking hover overlay */}
-              <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300" aria-hidden="true">
-                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
-                <div className="absolute inset-0 flex items-center justify-center p-5">
-                <p className="text-[13px] text-white leading-relaxed text-center">{card.details}</p>
-                </div>
-              </div>
               </article>
             ))}
           </div>
@@ -341,7 +489,7 @@ function PartnerGallery({
   tagForName,
 }: {
   items: { name: string; img: string; desc?: string }[];
-  tagForName?: string; // e.g., "AITEA" to tag only that partner card
+  tagForName?: string;
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);

@@ -4,6 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import SmartGetAppButton from "@/components/SmartGetAppButton";
+
 
 /** Types */
 type Tribe = {
@@ -33,7 +35,7 @@ export default function ConnectPage() {
       {
         id: "genz",
         // note: display name required in lowercase
-        name: "gen-z",
+        name: "Gen-z",
         img: "/images/genz.png",
         desc: "Young creators and disruptors connected to new-age culture and innovation.",
       },
@@ -46,7 +48,7 @@ export default function ConnectPage() {
       {
         id: "coffee",
         name: "Coffee Lover",
-        img: "/images/coffeelover2.jpg",
+        img: "/images/coffee-lover.png",
         desc: "Passionate about every sip, origin, and ritual of your brew.",
       },
       {
@@ -220,6 +222,19 @@ export default function ConnectPage() {
           ),
         };
       case "eco":
+  return {
+    copy: (
+      <>
+        <p className="text-gray-700 text-sm leading-relaxed">
+          Use the app to see crop vitality and farm updates, tip farmers for
+          good practices, and fund tools like solar pumps and soil sensors.
+          Real-time action, real-world outcomes.
+        </p>
+      </>
+    ),
+    cta: <SmartGetAppButton />,
+  };
+
         return {
           copy: (
             <>
@@ -547,26 +562,18 @@ export default function ConnectPage() {
           style={{ backgroundImage: "url('/images/bg-beans.jpg')" }}
           data-parallax=""
         />
-        <div className="relative z-10 max-w-3xl mx-auto px-6" data-aos="fade-up">
-          <h3 className="text-3xl sm:text-4xl font-bold mb-6 leading-tight">
-            Ready to root your story in coffee, community and connection?
-          </h3>
-          <p className="text-base sm:text-lg mb-10 opacity-90 leading-relaxed">
-            Download the <strong>Bean You® App</strong> to claim your digital farm plot, join your tribe, and earn tokens
-            redeemable for free learning, games, and collaborations.
-          </p>
+<div className="relative z-10 max-w-3xl mx-auto px-6" data-aos="fade-up">
+  <h3 className="text-3xl sm:text-4xl font-bold mb-6 leading-tight">
+    Ready to root your story in coffee, community and connection?
+  </h3>
+  <p className="text-base sm:text-lg mb-10 opacity-90 leading-relaxed">
+    Download the <strong>Bean You® App</strong> to claim your digital farm plot, join your tribe, and earn tokens
+    redeemable for free learning, games, and collaborations.
+  </p>
 
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              redirectToApp();
-            }}
-            className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-200"
-          >
-            🚀 Get the App
-          </a>
-        </div>
+  <SmartGetAppButton />
+</div>
+
       </section>
 
       {/* Utilities */}
