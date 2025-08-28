@@ -8,6 +8,7 @@ export default function Footer() {
   const [termsOpen, setTermsOpen] = useState(false);
   const [jobsOpen, setJobsOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
+  const [corporateOpen, setCorporateOpen] = useState(false);
 
   return (
     <footer className="relative overflow-hidden text-white">
@@ -39,7 +40,7 @@ export default function Footer() {
 
         {/* Content grid — 3 groups on mobile/desktop */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Legal (includes Terms, Privacy, FAQ, Jobs) */}
+          {/* Legal (includes Terms, Privacy, FAQ, Jobs, Corporate) */}
           <Section title="Legal">
             <ul className="space-y-3">
               <li className="flex items-center gap-3">
@@ -51,11 +52,20 @@ export default function Footer() {
                 </button>
                 <span className="text-white/40">•</span>
                 <Link
-                  href="app/legal/terms.tsx"
+                  href="/legal/terms"
                   className="inline-flex items-center gap-2 rounded-lg px-2 py-1 underline decoration-white/30 underline-offset-4 hover:text-orange-200"
                 >
                   Read full Terms
                 </Link>
+              </li>
+
+              <li>
+                <button
+                  onClick={() => setCorporateOpen(true)}
+                  className="group inline-flex items-center gap-2 rounded-lg px-2 py-1 transition hover:text-orange-200 focus:outline-none focus:ring-2 focus:ring-white/40"
+                >
+                  <Dot /> Corporate
+                </button>
               </li>
 
               <li>
@@ -126,7 +136,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ---- Modals (trimmed content) ---- */}
+      {/* ---- Modals ---- */}
       <Modal open={termsOpen} onClose={() => setTermsOpen(false)} title="Terms of Use — Quick View">
         <div className="space-y-3 text-sm leading-6 text-white/90">
           <p className="font-semibold">Summary (short):</p>
@@ -141,12 +151,25 @@ export default function Footer() {
           </p>
           <div className="pt-1">
             <Link
-              href="components/terms.tsx"
+              href="/legal/terms"
               className="inline-flex items-center rounded-full bg-white/10 px-4 py-2 text-sm underline decoration-white/30 underline-offset-4 hover:bg-white/15"
             >
               Read full Terms
             </Link>
           </div>
+        </div>
+      </Modal>
+
+      <Modal open={corporateOpen} onClose={() => setCorporateOpen(false)} title="Corporate">
+        <div className="space-y-3 text-sm leading-6 text-white/90">
+          <p>
+            Bean You®️ Ltd was registered in December 2024 in London, United Kingdom. In March 2025, the Bank of England
+            and the Financial Conduct Authority (FCA) confirmed in writing that Bean You®️ intangible Real World Assets
+            (iRWA) falls outside the financial instruments listed in Part 1 of Schedule 2 to the Financial Services and
+            Markets Act 2000 (Regulated Activities) Order 2001 (RAO) and thus are unregulated assets. Furthermore, in
+            April 2025 HMRC (UK tax authority) awarded the company advance assurance for Venture Capital Schemes (VCS)
+            for SEIS and EIS, which are formal tax efficient investment instruments for investors.
+          </p>
         </div>
       </Modal>
 

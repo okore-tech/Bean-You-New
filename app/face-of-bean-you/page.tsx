@@ -98,6 +98,15 @@ export default function FaceOfBeanYouPage() {
           video: "/videos/Vivian.mp4", // local video; modal includes MP4 fallback
           cta: "🎥 Watch",
         },
+{
+          img: "/images/Anne.jpeg",
+          title: "Spotlight • Anne",
+          desc:
+            "Courage, culture, community. Applicants submission.",
+          href: "#contact",
+          cta: "✉️ Message the Team",
+        },
+
         {
           img: "/images/community.jpg",
           title: "Your Turn • Send a Message",
@@ -257,11 +266,11 @@ export default function FaceOfBeanYouPage() {
                     {/* badge */}
                     {isApplicants && (
                       <span
-                        className={`absolute left-4 top-4 z-10 rounded-full px-3 py-1 text-xs font-bold text-white shadow ${
+                        className={`absolute left-4 top-0 z-10 rounded-full px-3 py-1 text-xs font-bold text-white shadow ${
                           idx === 0 ? "bg-orange-600" : "bg-emerald-600"
                         }`}
                       >
-                        {idx === 0 ? "Spotlight" : "Open Invite"}
+                        {idx === 0 ? "Spotlight" : "Your Turn"}
                       </span>
                     )}
 

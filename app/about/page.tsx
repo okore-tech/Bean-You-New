@@ -252,50 +252,55 @@ function TechnologySection() {
           <div className="grid sm:grid-cols-2 gap-4" data-aos="fade-right">
             {[
               {
-                title: "4IR Partners",
-                subtitle: "AI • Blockchain • IoT • 5G • Web3",
-                details: "Onboarded in 2024; 15-month collaboration powering ESG tech for Bean You® and pilot farms at Asili Coffee Estates.",
-                chips: ["China", "Vietnam", "Switzerland", "Portugal", "UK", "USA"],
+              title: "4IR Partners",
+              subtitle: "AI • Blockchain • IoT • 5G • Web3",
+              details: "Onboarded in 2024; 15-month collaboration powering ESG tech for Bean You® and pilot farms at Asili Coffee Estates.",
+              chips: ["China", "Vietnam", "Switzerland", "Portugal", "UK", "USA"],
               },
               {
-                title: "SER & Whitepapers",
-                subtitle: "Centre for Citizenship, Enterprise & Governance",
-                details: "Social Earnings Ratio® measures social impact using sentiment analysis. Developed since 2011; 16th paper in 2024; 220k+ community.",
-                link: { href: "https://ccegblockchain.com/white-papers/", label: "CCEG White Papers" },
+              title: "SER & Whitepapers",
+              subtitle: "Centre for Citizenship, Enterprise & Governance",
+              details: "Social Earnings Ratio® measures social impact using sentiment analysis. Developed since 2011; 16th paper in 2024; 220k+ community.",
+              link: { href: "https://ccegblockchain.com/white-papers/", label: "CCEG White Papers" },
               },
               {
-                title: "Tokens & Points",
-                subtitle: "ETH (SER) • ETC (MCR)",
-                details: "Value linked to measurable social impact for farms & farmers; non-financial points on MCR.",
+              title: "Tokens & Points",
+              subtitle: "ETH (SER) • ETC (MCR)",
+              details: "Bean You® financial token (derivative of SER) value linked to measurable social impact for farms & farmers. Bean You Points (derivative of MCR) are rewarded for positive actions and can be redeemed for rewards directly in the Bean You app with participating retailers.",
+              },
+              {
+              title: "Bean You® Token",
+              subtitle: "IoT • 5G • Tokenization",
+              details: "After 3 months, once we measure the project's social impact on farms and farmers, we'll issue Solana-based tokens to your App (lower gas fees). These tokens can be tracked and transacted within the App.",
               },
             ].map((card) => (
               <article key={card.title} className="group relative overflow-hidden rounded-3xl border border-white/15 bg-white/10 backdrop-blur-lg p-5 shadow-[0_14px_44px_rgba(0,0,0,.35)]" tabIndex={0}>
-                <h3 className="text-xl font-bold text-white">{card.title}</h3>
-                <p className="mt-1 text-sm text-yellow-100/90">{card.subtitle}</p>
-                {"chips" in card && (
-                  <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-yellow-100/90">
-                    {(card as any).chips.map((c: string) => (
-                      <span key={c} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/15">{c}</span>
-                    ))}
-                  </div>
-                )}
-                {"link" in card && (card as any).link && (
-                  <a
-                    href={(card as any).link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-3 text-sm underline underline-offset-4 text-yellow-200 hover:text-yellow-100"
-                  >
-                    {(card as any).link.label}
-                  </a>
-                )}
-                {/* blocking hover overlay */}
-                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300" aria-hidden="true">
-                  <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
-                  <div className="absolute inset-0 flex items-center justify-center p-5">
-                    <p className="text-[13px] text-white leading-relaxed text-center">{card.details}</p>
-                  </div>
+              <h3 className="text-xl font-bold text-white">{card.title}</h3>
+              <p className="mt-1 text-sm text-yellow-100/90">{card.subtitle}</p>
+              {"chips" in card && (
+                <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-yellow-100/90">
+                {(card as any).chips.map((c: string) => (
+                  <span key={c} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/15">{c}</span>
+                ))}
                 </div>
+              )}
+              {"link" in card && (card as any).link && (
+                <a
+                href={(card as any).link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-3 text-sm underline underline-offset-4 text-yellow-200 hover:text-yellow-100"
+                >
+                {(card as any).link.label}
+                </a>
+              )}
+              {/* blocking hover overlay */}
+              <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300" aria-hidden="true">
+                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
+                <div className="absolute inset-0 flex items-center justify-center p-5">
+                <p className="text-[13px] text-white leading-relaxed text-center">{card.details}</p>
+                </div>
+              </div>
               </article>
             ))}
           </div>

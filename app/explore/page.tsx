@@ -360,7 +360,7 @@ export default function ExplorePage() {
         id: "step-1",
         n: "1",
         title: "Recognise Who You Are",
-        text: "Share your values by simple text, a 60-sec voice note, or a 30-sec selfie video. Our AI does the rest.",
+        text: "Through the App share your values by simple text, a 60-sec voice note, or a 30-sec selfie video. Our AI does the rest.",
         img: "/images/explore1.jpg",
         ctas: [{ label: "Get the app", onClick: onGetApp }],
       },

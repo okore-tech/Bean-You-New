@@ -196,7 +196,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main>
+    <main className="overflow-x-clip">
       {/* HERO (new) */}
       <Hero />
 

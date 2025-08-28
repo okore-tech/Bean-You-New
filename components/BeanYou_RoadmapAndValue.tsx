@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Poppins } from "next/font/google";
+import SmartGetApp from "@/components/SmartGetAppButton"; // ✅ use the shared component
+import SmartGetAppButton from "@/components/SmartGetAppButton";
 
 /* ===== Font (local, page-only fix) ===== */
 const poppins = Poppins({
@@ -55,7 +57,7 @@ const ROADMAP_ITEMS: Array<{
       "Asili farm pilots — establish international tech partners; integrate IoT, 5G, and blockchain into 5 coffee farms",
     details: [],
     artSrc: "/images/blockchain2.png",
-    ctas: [{ label: "Asili Estates", href: "https://asiliestates.co.ke/" }],
+    ctas: [{ label: "CCEG", href: "https://www.cceg.org.uk/ " }],
   },
   {
     year: "2025",
@@ -76,7 +78,7 @@ const ROADMAP_ITEMS: Array<{
       "Issue Bean You® Points rewarding good ESG behaviour",
     ],
     artSrc: "/images/globe.png",
-    // no link CTAs here; 2026 will show exactly ONE “Get the App” button via SmartAppButton.
+    // no link CTAs here; 2026 will show exactly ONE “Get the App” button via SmartGetApp.
     ctas: [],
   },
   // 2027 REMOVED COMPLETELY
@@ -136,34 +138,6 @@ function useRevealOnScroll<T extends HTMLElement>(threshold = 0.2) {
     return () => io.disconnect();
   }, [threshold]);
   return ref;
-}
-
-/* ---------- Smart single app button ---------- */
-function SmartAppButton() {
-  const handleClick = () => {
-    if (typeof window === "undefined") return;
-    const ua = navigator.userAgent || (navigator as any).vendor || (window as any).opera;
-    const android = "https://play.google.com/store/apps/details?id=com.beanu&hl=en_GB";
-    const ios =
-      "https://apps.apple.com/us/app/bean-you-be-your-identities/id6742394096?uo=2";
-
-    if (/android/i.test(ua)) window.location.href = android;
-    else if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) window.location.href = ios;
-    else {
-      window.open(android, "_blank");
-      window.open(ios, "_blank");
-    }
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className="px-5 py-2.5 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
-      aria-label="Get the Bean You app"
-    >
-      Get the App
-    </button>
-  );
 }
 
 /* ---------- Roadmap Mosaic ---------- */
@@ -324,7 +298,7 @@ function RoadmapCard({
 
           <div className="mt-5 flex flex-wrap gap-3">
             {is2026 ? (
-              <SmartAppButton />
+              <SmartGetAppButton />  
             ) : firstCta ? (
               <Link
                 href={firstCta.href}
@@ -560,23 +534,24 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
           );
         })()}
 
-        {/* CTA bar */}
-        <div className="mt-10 md:mt-12 flex flex-col md:flex-row items-center justify-center gap-3">
-          <Link
-            href="/connect"
-            className="px-5 py-3 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
-          >
-            Meet Your Tribe
-          </Link>
-          <a
-            href="https://parcels.beanyou.com/"
-            target="_blank"
-            rel="noreferrer"
-            className="px-5 py-3 rounded-full bg-white/10 text-yellow-200 border border-white/20 hover:bg-white/15 transition"
-          >
-            Explore Farm Platform
-          </a>
-        </div>
+       {/* CTA bar */}
+<div className="mt-10 md:mt-12 flex flex-col md:flex-row items-center justify-center gap-3">
+  <Link
+    href="/connect"
+    className="px-5 py-3 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 text-black font-semibold shadow-md hover:scale-[1.03] active:scale-95 transition"
+  >
+    Meet Your Tribe
+  </Link>
+  <a
+    href="https://parcels.beanyou.com/"
+    target="_blank"
+    rel="noreferrer"
+    className="px-5 py-3 rounded-full bg-white/10 text-yellow-200 border border-white/20 hover:bg-white/15 transition"
+  >
+    Explore Farm Platform
+  </a>
+  <SmartGetAppButton />
+</div>   {/* ✅ closes correctly */}
       </div>
     </section>
   );
