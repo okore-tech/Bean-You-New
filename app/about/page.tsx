@@ -89,7 +89,7 @@ export default function AboutPage() {
           alt="Directors cup"
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover rounded-full"
-          style={{ objectPosition: "50% 0%" }}       // push visible area down a touch
+          style={{ objectPosition: "50% 20%" }}       // push visible area down a touch
         />
       </div>
       <a
@@ -111,7 +111,7 @@ export default function AboutPage() {
           alt="Non-Executives cup"
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover rounded-full"
-          style={{ objectPosition: "50% 0%" }}       // push visible area down a bit more
+          style={{ objectPosition: "50% 20%" }}       // push visible area down a bit more
         />
       </div>
       <a

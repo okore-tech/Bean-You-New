@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 
-type Tab = "Ambassador" | "tech" | "applicants";
+type Tab = "Ambassadors" | "tech" | "applicants";
 
 type Card = {
   img: string;
@@ -36,8 +36,11 @@ export default function FaceOfBeanYouPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [isYT, setIsYT] = useState(false);
-  const [filter, setFilter] = useState<Tab>("Ambassador");
+  const [filter, setFilter] = useState<Tab>("Ambassadors");
+  const [isLoading, setIsLoading] = useState(false);
+  const [readyKey, setReadyKey] = useState(0); // force re-mount on tab change after preload
 
+  // Keep AOS for sections, but not for cards
   useEffect(() => {
     (async () => {
       try {
@@ -46,7 +49,7 @@ export default function FaceOfBeanYouPage() {
         AOS.init({
           duration: 700,
           easing: "ease-out",
-          once: true,   // prevent re-animating on click/scroll
+          once: true,
           mirror: false,
           offset: 50,
         });
@@ -56,7 +59,7 @@ export default function FaceOfBeanYouPage() {
 
   const cards = useMemo<Record<Tab, Card[]>>(
     () => ({
-      Ambassador: [
+      Ambassadors: [
         {
           img: "/images/Kevin.jpg",
           title: "Kevin Mills • Musician",
@@ -67,8 +70,7 @@ export default function FaceOfBeanYouPage() {
         {
           img: "/images/Anne.jpeg",
           title: "Spotlight • Anne",
-          desc:
-            "Courage, culture, community. Applicants submission.",
+          desc: "Courage, culture, community. Applicants submission.",
           href: "#contact",
           cta: "✉️ Message the Team",
         },
@@ -101,9 +103,8 @@ export default function FaceOfBeanYouPage() {
         {
           img: "/images/euginia2.jpg",
           title: "Spotlight • Vivian",
-          desc:
-            "Courage, culture, community. Applicants submission.",
-          video: "/videos/Vivian.mp4", // local video; modal includes MP4 fallback
+          desc: "Courage, culture, community. Applicants submission.",
+          video: "/videos/Vivian.mp4",
           cta: "🎥 Watch",
         },
         {
@@ -119,6 +120,35 @@ export default function FaceOfBeanYouPage() {
     []
   );
 
+  // Preload images when switching tabs; show a simple spinner meanwhile
+  useEffect(() => {
+    let cancelled = false;
+    const preload = async () => {
+      setIsLoading(true);
+      const imgs = cards[filter].map((c) => c.img);
+      await Promise.all(
+        imgs.map(
+          (src) =>
+            new Promise<void>((resolve) => {
+              const i = new window.Image();
+              i.onload = () => resolve();
+              i.onerror = () => resolve();
+              i.src = src;
+            })
+        )
+      );
+      if (!cancelled) {
+        setIsLoading(false);
+        // force a fresh mount for the grid to avoid stale images
+        setReadyKey((k) => k + 1);
+      }
+    };
+    preload();
+    return () => {
+      cancelled = true;
+    };
+  }, [filter, cards]);
+
   return (
     <div className="relative">
       {/* helper styles */}
@@ -132,25 +162,21 @@ export default function FaceOfBeanYouPage() {
         @media (max-width: 768px) {
           .clip-diagonal { clip-path: polygon(0 0, 100% 0, 100% 98%, 0% 100%); }
         }
-        .card-mask {
-          clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
-          transition: clip-path 0.4s ease, transform 0.4s ease, box-shadow 0.3s ease;
+
+        /* SIMPLE LOADER */
+        .spinner {
+          width: 36px;
+          height: 36px;
+          border: 3px solid rgba(0,0,0,0.15);
+          border-top-color: rgba(234, 88, 12, 1); /* orange-600 */
+          border-radius: 50%;
+          animation: spin .7s linear infinite;
         }
-        .card-mask:hover {
-          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-          transform: scale(1.02);
-          box-shadow: 0 18px 50px rgba(0,0,0,.2);
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
-        /* Subtle pulsing ring for Applicants */
-        @keyframes ringPulse {
-          0%   { box-shadow: 0 0 0 0 rgba(249,115,22,.35); }
-          70%  { box-shadow: 0 0 0 18px rgba(249,115,22,0); }
-          100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
-        }
-        .pulse-ring {
-          animation: ringPulse 2.6s ease-out infinite;
-          border-radius: 1rem;
-        }
+
+        /* Keep subtle hero image mask, remove card hover/clip animations */
         .hero-img-mask {
           clip-path: polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%);
           transition: all 0.5s ease;
@@ -222,14 +248,14 @@ export default function FaceOfBeanYouPage() {
 
             {/* Filter Tabs */}
             <div className="mb-10 flex justify-center gap-4">
-              {(["music", "tech", "applicants"] as Tab[]).map((tab) => {
+              {(["Ambassadors", "tech", "applicants"] as Tab[]).map((tab) => {
                 const active = filter === tab;
                 return (
                   <button
                     key={tab}
                     onClick={() => setFilter(tab)}
-                    className={`rounded-full px-6 py-2 font-semibold shadow transition hover:scale-105 ${
-                      active ? "bg-orange-600 text-white" : "bg-white text-orange-700"
+                    className={`rounded-full px-6 py-2 font-semibold shadow transition ${
+                      active ? "bg-orange-600 text-white" : "bg-white text-orange-700 hover:scale-105"
                     }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -238,81 +264,82 @@ export default function FaceOfBeanYouPage() {
               })}
             </div>
 
-            {/* Cards */}
-            <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-              {cards[filter].map((c: Card, idx) => {
-                const isApplicants = filter === "applicants";
-                // try to provide an MP4 fallback path if the video is .mov
-                const mp4Fallback =
-                  c.video && /\.mov$/i.test(c.video) ? c.video.replace(/\.mov$/i, "Vivian.mp4") : undefined;
-
-                return (
-                  <div
-                    key={idx}
-                    className={`card-mask relative group overflow-hidden rounded-2xl bg-white shadow-xl transition ${
-                      isApplicants ? "ring-2 ring-offset-2 ring-offset-[#e1b382] ring-orange-400/70 hover:ring-orange-500" : ""
-                    }`}
-                    data-aos="fade-up"
-                  >
-                    {/* pulsing ring accent for applicants */}
-                    {isApplicants && (
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute -inset-1 rounded-2xl pulse-ring"
-                      />
-                    )}
-
-                    {/* badge */}
-                    {isApplicants && (
-                      <span
-                        className={`absolute left-4 top-4 z-10 rounded-full px-3 py-1 text-xs font-bold text-white shadow ${
-                          idx === 0 ? "bg-orange-600" : "bg-emerald-600"
-                        }`}
-                      >
-                        {idx === 0 ? "Spotlight" : "Your Turn"}
-                      </span>
-                    )}
-
-                    <Image src={c.img} alt={c.alt ?? c.title} width={900} height={600} className="h-64 w-full object-cover" />
-                    <div className="p-6 text-center">
-                      <h3 className="text-xl font-extrabold text-orange-900 tracking-tight">{c.title}</h3>
-                      <p className="mt-2 text-sm text-[#4e342e]/90">{c.desc}</p>
-
-                      {/* unified gradient CTA for all */}
-                      {c.video ? (
-                        <button
-                          onClick={() => {
-                            const yt = isYouTubeUrl(c.video!);
-                            setIsYT(yt);
-                            setVideoUrl(yt ? toYouTubeEmbed(c.video!) : c.video!);
-                            setLightboxOpen(true);
-                          }}
-                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 px-5 py-2 font-semibold text-black shadow-md hover:scale-[1.03] active:scale-95 transition"
+            {/* Loader on tab switch */}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="spinner" aria-label="Loading" />
+              </div>
+            ) : (
+              <div
+                key={readyKey}
+                className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3 animate-fadein"
+              >
+                {cards[filter].map((c: Card, idx) => {
+                  const isApplicants = filter === "applicants";
+                  return (
+                    <div
+                      key={idx}
+                      className={`relative overflow-hidden rounded-2xl bg-white shadow-xl ${
+                        isApplicants ? "ring-2 ring-offset-2 ring-offset-[#e1b382] ring-orange-400/70" : ""
+                      }`}
+                    >
+                      {/* Small badge for applicants */}
+                      {isApplicants && (
+                        <span
+                          className={`absolute left-4 top-4 z-10 rounded-full px-3 py-1 text-xs font-bold text-white shadow ${
+                            idx === 0 ? "bg-orange-600" : "bg-emerald-600"
+                          }`}
                         >
-                          {c.cta ?? "🎥 Watch Video"}
-                        </button>
-                      ) : (
-                        <a
-                          href={c.href ?? "#contact"}
-                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 px-5 py-2 font-semibold text-black shadow-md hover:scale-[1.03] active:scale-95 transition"
-                        >
-                          {c.cta ?? "✉️ Send Message"}
-                        </a>
+                          {idx === 0 ? "Spotlight" : "Your Turn"}
+                        </span>
                       )}
+
+                      <Image
+                        src={c.img}
+                        alt={c.alt ?? c.title}
+                        width={900}
+                        height={600}
+                        className="h-64 w-full object-cover"
+                        priority={false}
+                      />
+                      <div className="p-6 text-center">
+                        <h3 className="text-xl font-extrabold text-orange-900 tracking-tight">{c.title}</h3>
+                        <p className="mt-2 text-sm text-[#4e342e]/90">{c.desc}</p>
+
+                        {/* unified gradient CTA for all */}
+                        {c.video ? (
+                          <button
+                            onClick={() => {
+                              const yt = isYouTubeUrl(c.video!);
+                              setIsYT(yt);
+                              setVideoUrl(yt ? toYouTubeEmbed(c.video!) : c.video!);
+                              setLightboxOpen(true);
+                            }}
+                            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 px-5 py-2 font-semibold text-black shadow-md hover:scale-[1.03] active:scale-95 transition"
+                          >
+                            {c.cta ?? "🎥 Watch Video"}
+                          </button>
+                        ) : (
+                          <a
+                            href={c.href ?? "#contact"}
+                            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 px-5 py-2 font-semibold text-black shadow-md hover:scale-[1.03] active:scale-95 transition"
+                          >
+                            {c.cta ?? "✉️ Send Message"}
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* VIDEO LIGHTBOX */}
           {lightboxOpen && (
             <div
               className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm"
-              onClick={(e) => {
-                if (e.currentTarget === e.target) setLightboxOpen(false);
-              }}
+              onClick={(e) => { if (e.currentTarget === e.target) setLightboxOpen(false); }}
             >
               <div className="pointer-events-none absolute inset-0 opacity-10 mix-blend-overlay" style={{ backgroundImage: "url(/images/texture.png)" }} />
               <div className="relative w-full max-w-3xl p-4">
@@ -337,9 +364,7 @@ export default function FaceOfBeanYouPage() {
                     </div>
                   ) : (
                     <video controls autoPlay playsInline className="max-h-[80vh] w-full">
-                      {/* Primary (whatever URL you passed, e.g., .mov) */}
                       <source src={videoUrl} type={/\.mov$/i.test(videoUrl) ? "video/quicktime" : "video/mp4"} />
-                      {/* Optional MP4 fallback if a .mov URL is used and an .mp4 exists at the same path */}
                       { /\.mov$/i.test(videoUrl) && (
                         <source src={videoUrl.replace(/\.mov$/i, "Vivian.mp4")} type="video/mp4" />
                       ) }
@@ -352,7 +377,7 @@ export default function FaceOfBeanYouPage() {
           )}
         </section>
 
-        {/* CONTACT (mailto to info@beanyou.com) */}
+        {/* CONTACT */}
         <section id="contact" className="relative overflow-hidden bg-[#fcd5ce] px-6 py-24 text-[#4e342e]">
           <div className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl" style={{ backgroundColor: "#fecaca" }} />
           <div className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl" style={{ backgroundColor: "#c2410c" }} />
