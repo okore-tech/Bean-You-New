@@ -19,8 +19,7 @@ const routes = [
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
   return routes.map(({ path, priority }) => ({
-    // trailingSlash: true in next.config.ts -> "/about/" is canonical
-    url: `${SITE}${path === "/" ? "/" : path + "/"}`,
+    url: `${SITE}${path}`,
     lastModified,
     changeFrequency: "monthly",
     priority,

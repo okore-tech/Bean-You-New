@@ -3,7 +3,7 @@ import React from "react";
 
 export const metadata = {
   title: { absolute: "Terms of Use — Bean You®" },
-  alternates: { canonical: "/legal/terms/" },
+  alternates: { canonical: "/legal/terms" },
 };
 
 export default function TermsPage() {

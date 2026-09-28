@@ -4,11 +4,11 @@ import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Explore Communities",
   description: "Discover Bean You communities to learn, trade, invest, and connect around coffee and culture.",
-  alternates: { canonical: "/explore/" },
+  alternates: { canonical: "/explore" },
   openGraph: {
     title: "Explore Communities | Bean You",
     description: "Discover Bean You communities to learn, trade, invest, and connect around coffee and culture.",
-    url: "/explore/",
+    url: "/explore",
   },
 };
 

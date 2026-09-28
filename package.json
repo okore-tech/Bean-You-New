@@ -7,9 +7,8 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "deploy": "echo \"Deploys run in CI on push to main (.github/workflows/deploy.yml). For a manual upload see infra/DEPLOY.md\" && exit 1",
-    "format": "prettier --write .",
-    "zip": "npm run build && cd out && zip -r ../beanyou-site.zip . -x \"*.DS_Store\" && echo \"Created beanyou-site.zip - upload and extract in cPanel File Manager\""
+    "deploy": "echo \"Deploys happen automatically on push to main via Vercel's Git integration.\" && exit 1",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "aos": "^2.3.4",

@@ -4,11 +4,11 @@ import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Connect",
   description: "Join your tribe, support farmers directly, and earn rewards for doing good with Bean You.",
-  alternates: { canonical: "/connect/" },
+  alternates: { canonical: "/connect" },
   openGraph: {
     title: "Connect | Bean You",
     description: "Join your tribe, support farmers directly, and earn rewards for doing good with Bean You.",
-    url: "/connect/",
+    url: "/connect",
   },
 };
 
