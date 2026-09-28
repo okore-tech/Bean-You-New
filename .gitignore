@@ -9,6 +9,7 @@ yarn-error.log*
 
 # Next.js static export output
 out
+beanyou-site.zip
 
 # Build artifacts
 tsconfig.tsbuildinfo

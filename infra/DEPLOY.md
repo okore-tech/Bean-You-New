@@ -1,175 +1,166 @@
-# Deploying beanyou.com to AWS
+# Deploying beanyou.com to GoDaddy
 
-The site is a fully static Next.js export (`output: "export"` → `out/`).
-Target architecture:
+The site builds to a folder of plain static files (`out/`) — HTML, CSS, JS,
+images and video. There is no Node process to run and nothing to keep alive on
+the server, so this works on GoDaddy's ordinary Linux/cPanel hosting. You do
+**not** need a VPS, and you do not need their Node.js app hosting.
 
 ```
-Route 53 (beanyou.com)
-  └─ A/AAAA alias → CloudFront ──(OAC)──> S3 bucket (private)
-                       ├─ ACM certificate (us-east-1)
-                       └─ CloudFront Function: infra/cloudfront-rewrite.js
+beanyou.com  ->  GoDaddy cPanel  ->  /public_html/   (contents of out/)
+                                     └─ .htaccess    (routing, caching, HTTPS)
 ```
 
-Nothing runs a server. There is no EC2 instance, no TLS renewal to babysit,
-and no Next.js runtime exposed to the internet.
+> **Assumption:** this describes GoDaddy **Linux Hosting with cPanel**, which is
+> what "GoDaddy hosting" normally means. If you are on a VPS or Windows/Plesk
+> plan, the build is identical but the upload step differs — see *Other GoDaddy
+> plans* at the bottom.
 
 ---
 
-## Prerequisites
+## What `.htaccess` does
 
-* An AWS account, and the AWS CLI authenticated (`aws configure` or SSO).
-* Control of the `beanyou.com` domain at its registrar.
+`public/.htaccess` is copied into every build and must end up in the web root
+next to `index.html`. It replaces what a CDN would otherwise handle:
 
-Pick names once and reuse them:
-
-```bash
-export BUCKET=beanyou-site-prod          # must be globally unique
-export REGION=eu-west-1                  # bucket region
-export DOMAIN=beanyou.com
-```
-
----
-
-## 1. S3 bucket (private — CloudFront reaches it via OAC)
-
-```bash
-aws s3api create-bucket --bucket "$BUCKET" --region "$REGION" \
-  --create-bucket-configuration LocationConstraint="$REGION"
-
-aws s3api put-public-access-block --bucket "$BUCKET" \
-  --public-access-block-configuration \
-  "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
-
-aws s3api put-bucket-encryption --bucket "$BUCKET" \
-  --server-side-encryption-configuration \
-  '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
-
-aws s3api put-bucket-versioning --bucket "$BUCKET" \
-  --versioning-configuration Status=Enabled
-```
-
-Do **not** enable S3 static website hosting. That requires a public bucket.
-The CloudFront Function handles index-document resolution instead.
-
-## 2. TLS certificate — must be in us-east-1
-
-CloudFront only reads certificates from `us-east-1`, regardless of where the
-bucket lives.
-
-```bash
-aws acm request-certificate --region us-east-1 \
-  --domain-name "$DOMAIN" \
-  --subject-alternative-names "www.$DOMAIN" \
-  --validation-method DNS
-```
-
-Add the CNAME validation records it returns, then wait for `ISSUED`:
-
-```bash
-aws acm describe-certificate --region us-east-1 \
-  --certificate-arn <arn> --query 'Certificate.Status'
-```
-
-## 3. CloudFront Function for directory URLs
-
-```bash
-aws cloudfront create-function --name beanyou-rewrite \
-  --function-config Comment="index.html rewrite",Runtime=cloudfront-js-2.0 \
-  --function-code fileb://infra/cloudfront-rewrite.js
-
-aws cloudfront publish-function --name beanyou-rewrite --if-match <etag>
-```
-
-## 4. CloudFront distribution
-
-Easiest in the console. Settings that matter:
-
-| Setting | Value |
+| Concern | Handled by |
 |---|---|
-| Origin | the S3 bucket, **Origin access control** (create new OAC) |
-| Viewer protocol policy | Redirect HTTP to HTTPS |
-| Alternate domain names | `beanyou.com`, `www.beanyou.com` |
-| Custom SSL certificate | the ACM cert from step 2 |
-| Default root object | `index.html` |
-| Viewer request function | `beanyou-rewrite` |
-| Compress objects automatically | Yes |
-| Custom error response | 404 → `/404.html`, response code 404 |
+| `/about/` serves `/about/index.html` | `DirectoryIndex` (routes are real folders) |
+| `/about` redirects to `/about/` | explicit rewrite, forced to `https://` |
+| Force HTTPS | rewrite on `X-Forwarded-Proto` |
+| `www.` redirects to apex | rewrite (flip the block to prefer `www`) |
+| 404s | `ErrorDocument 404 /404.html` |
+| Caching | 1 year for `/_next/static`, 1 month for media, revalidate for HTML |
+| gzip | `mod_deflate` |
+| Security headers | `nosniff`, `SAMEORIGIN`, Referrer-Policy, Permissions-Policy |
 
-When you attach the OAC, CloudFront shows the bucket policy to apply — copy it
-onto the bucket so only this distribution can read it.
+Verified against Apache 2.4 locally: all 8 routes return 200, `/about` →
+`/about/` in a single hop, 404s return a real 404 status, and `.mp4` is served
+with `Accept-Ranges: bytes` so seeking works.
 
-## 5. Route 53
+---
 
-```bash
-aws route53 create-hosted-zone --name "$DOMAIN" \
-  --caller-reference "beanyou-$(date +%s)"
-```
+## 1. Point the domain at the hosting
 
-Create **A (alias)** records for both `beanyou.com` and `www.beanyou.com`
-pointing at the distribution. Alias records work at the apex; a CNAME does not.
+If `beanyou.com` is registered with GoDaddy and hosted on the same account,
+their control panel links the two for you and DNS is already correct.
 
-> **Before cutting over:** lower the TTL on the existing records at your current
-> DNS provider to 300s at least a day ahead, so a rollback is fast. Only then
-> move the nameservers to the four Route 53 returns.
+If the domain is registered elsewhere, set its nameservers (or an A record) to
+the values cPanel shows under **Shared IP Address**.
 
-## 6. GitHub Actions deploy role (OIDC — no stored AWS keys)
+> **Lower the TTL on your current DNS records to 300s at least a day before
+> cutting over**, so a rollback takes minutes instead of hours.
 
-Create an IAM role trusted by GitHub's OIDC provider, restricted to this repo:
+## 2. Enable HTTPS before uploading
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Effect": "Allow",
-    "Principal": { "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com" },
-    "Action": "sts:AssumeRoleWithWebIdentity",
-    "Condition": {
-      "StringEquals": { "token.actions.githubusercontent.com:aud": "sts.amazonaws.com" },
-      "StringLike":   { "token.actions.githubusercontent.com:sub": "repo:okore-tech/Bean-You-New:ref:refs/heads/main" }
-    }
-  }]
-}
-```
+In cPanel, open **SSL/TLS Status** and issue/verify the free certificate for
+both `beanyou.com` and `www.beanyou.com`.
 
-Grant it only `s3:ListBucket` + `s3:PutObject`/`DeleteObject` on this bucket and
-`cloudfront:CreateInvalidation` on this distribution. Nothing else.
+Do this *first*. The `.htaccess` force-HTTPS rule will redirect every visitor to
+`https://`, so if no certificate exists yet the site will appear broken.
 
-Then in the GitHub repo:
+## 3. Upload the site
 
-* **Variables:** `AWS_REGION`, `S3_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID`
-* **Secret:** `AWS_DEPLOY_ROLE_ARN`
-
-`.github/workflows/deploy.yml` builds on every push and PR, but only deploys
-from `main`.
-
-## 7. Verify, then retire Vercel
-
-Before switching DNS, test the distribution directly:
+### Option A — manual, via cPanel File Manager
 
 ```bash
-curl -sI https://<dist-id>.cloudfront.net/about/
-curl -sv --resolve "$DOMAIN:443:<cloudfront-ip>" "https://$DOMAIN/" -o /dev/null
+npm ci
+npm run zip     # builds, then packs out/ into beanyou-site.zip
 ```
 
-Leave `bean-you-new.vercel.app` serving until DNS has fully propagated and
-you've watched CloudFront logs for a day or two. Then remove the Git
-integration from the Vercel project — **not** from this repo, since nothing
-here controls it. Keep the Vercel project for a week as a rollback.
+In **File Manager**, open `/public_html`, upload `beanyou-site.zip`, then
+**Extract** it there.
+
+Two things people get wrong:
+
+* Upload the **contents** of `out/`, not the `out` folder itself.
+  `/public_html/index.html` is correct; `/public_html/out/index.html` is not.
+* File Manager hides dotfiles by default, so **`.htaccess` looks missing**.
+  Turn on *Settings → Show Hidden Files* and confirm it is there. Without it
+  you get 404s on every route except the homepage.
+
+Delete GoDaddy's placeholder `index.html`/`default.html` if present.
+
+### Option B — automatic, on every push to `main`
+
+`.github/workflows/deploy.yml` builds and uploads over **FTPS**. In the repo
+settings add:
+
+| Kind | Name | Value |
+|---|---|---|
+| Secret | `FTP_SERVER` | your FTP hostname from cPanel (e.g. `ftp.beanyou.com`) |
+| Secret | `FTP_USERNAME` | the FTP user |
+| Secret | `FTP_PASSWORD` | that user's password |
+| Variable | `FTP_SERVER_DIR` | `/public_html/` |
+
+Create a **dedicated FTP account scoped to `/public_html`** in cPanel rather
+than using your main hosting login — that login can reach every file in the
+account, and it would be sitting in GitHub.
+
+The workflow pins `protocol: ftps`. Do not change it to `ftp`: plain FTP sends
+the password and the entire site in cleartext. It also only transfers changed
+files, so routine deploys move kilobytes rather than 38 MB.
+
+## 4. Verify
+
+```bash
+curl -sI https://beanyou.com/            # expect 200
+curl -sI https://beanyou.com/about       # expect 301 -> https://beanyou.com/about/
+curl -sI https://beanyou.com/about/      # expect 200
+curl -sI http://beanyou.com/             # expect 301 -> https://
+curl -sI https://beanyou.com/nope/       # expect 404
+curl -sI https://beanyou.com/_next/static/  # expect Cache-Control: immutable
+```
+
+Then load the site and check the browser console is clean.
+
+## 5. Retire Vercel
+
+Leave `bean-you-new.vercel.app` serving until DNS has propagated and you have
+watched real traffic for a day or two. Then remove the Git integration from the
+**Vercel dashboard** — nothing in this repo controls it. Keep the Vercel
+project for a week as a rollback.
+
+---
+
+## Things to watch on shared hosting
+
+**No CDN.** Every visitor pulls from one server in one location. The site is
+38 MB total, of which 16 MB is video — fine for moderate traffic, but a busy day
+or a burst of video plays will feel slower than Vercel did, especially for
+visitors far from the datacentre. If that becomes a problem, putting Cloudflare
+(free tier) in front of GoDaddy solves it without changing the hosting.
+
+**Bandwidth limits.** "Unlimited" shared plans have fair-use ceilings. The two
+videos are 9.7 MB and 5.5 MB; they are `preload="none"`, so they only transfer
+when someone presses play — keep it that way.
+
+**No automatic rollback.** Unlike Vercel, there is no previous deployment to
+promote. The GitHub Actions artifact from each build is retained for 5 days and
+can be re-uploaded if a deploy goes wrong.
+
+---
+
+## Other GoDaddy plans
+
+* **VPS / dedicated** — same `out/` folder; serve it with nginx or Apache. On
+  nginx, `.htaccess` is ignored: translate it to a server block using
+  `try_files $uri $uri/index.html =404`.
+* **Windows / Plesk** — `.htaccess` is ignored (IIS). Needs an equivalent
+  `web.config` for the rewrites and caching. Ask and it can be written.
+* **Website Builder** — not usable. It hosts its own page content and cannot
+  serve an uploaded Next.js build.
 
 ---
 
 ## Adding new images or video
 
-There is no image optimizer in a static export — whatever lands in `public/`
-is what the browser downloads. The originals in this repo were camera-sized
-(one JPEG was 8000×5333 at 24 MB), which is why `public/` was 374 MB.
-
-Before committing new media:
+There is no image optimizer in a static export — whatever lands in `public/` is
+what the browser downloads. The originals in this repo were camera-sized (one
+JPEG was 8000×5333 at 24 MB), which is why `public/` was 374 MB.
 
 **Images** — cap at 1920px on the long edge, JPEG quality ~80:
 
 ```bash
-# requires: npm i -g sharp-cli   (or use any image tool)
 sharp -i input.jpg -o public/images/output.jpg resize 1920 --fit inside -- jpeg --quality 80
 ```
 
@@ -180,9 +171,9 @@ sharp -i input.jpg -o public/images/output.jpg resize 1920 --fit inside -- jpeg 
 ffmpeg -i input.mp4 -vf "scale=-2:720" -c:v libx264 -crf 25 -preset slow \
   -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart public/videos/output.mp4
 
-# poster frame, so nothing downloads until the viewer presses play
 ffmpeg -ss 3 -i public/videos/output.mp4 -frames:v 1 -q:v 4 public/images/output-poster.jpg
 ```
 
 Always give a `<video>` both `preload="none"` and a `poster`. Without them the
 browser starts pulling the file on page load, whether or not anyone watches it.
+This matters more on shared hosting than it did on a CDN.

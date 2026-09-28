@@ -1,4 +1,4 @@
-name: Deploy to AWS
+name: Deploy to GoDaddy
 
 on:
   push:
@@ -9,11 +9,10 @@ on:
 
 concurrency:
   group: deploy-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false   # never interrupt a half-finished upload
 
 permissions:
   contents: read
-  id-token: write   # required for OIDC role assumption
 
 jobs:
   build:
@@ -37,17 +36,21 @@ jobs:
       - name: Build static export
         run: npm run build
 
-      - name: Fail if export is missing or empty
-        run: test -f out/index.html
+      - name: Sanity-check the export
+        run: |
+          test -f out/index.html
+          test -f out/.htaccess        # Apache config must ship with the site
+          test -f out/404.html
 
       - uses: actions/upload-artifact@v4
         with:
           name: site
           path: out/
+          include-hidden-files: true   # .htaccess would be dropped otherwise
           retention-days: 5
 
   deploy:
-    # Only the real thing on main; PRs stop after build.
+    # PRs stop after build; only main publishes.
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
@@ -58,39 +61,22 @@ jobs:
           name: site
           path: out
 
-      - name: Configure AWS credentials (OIDC, no stored keys)
-        uses: aws-actions/configure-aws-credentials@v4
+      # FTPS (explicit TLS). Plain FTP would send the password and the whole
+      # site in cleartext - do not change `protocol` to ftp.
+      - name: Upload to GoDaddy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      # Fingerprinted assets never change under a given name -> cache forever.
-      - name: Sync immutable assets
-        run: |
-          aws s3 sync out/_next/static "s3://${{ vars.S3_BUCKET }}/_next/static" \
-            --cache-control "public,max-age=31536000,immutable" \
-            --delete
-
-      # Everything else (images, video, fonts in public/) - long but revalidated.
-      - name: Sync public assets
-        run: |
-          aws s3 sync out "s3://${{ vars.S3_BUCKET }}" \
-            --exclude "*.html" \
-            --exclude "_next/static/*" \
-            --cache-control "public,max-age=86400" \
-            --delete
-
-      # HTML must revalidate or users get stale pages after a deploy.
-      - name: Sync HTML
-        run: |
-          aws s3 sync out "s3://${{ vars.S3_BUCKET }}" \
-            --exclude "*" --include "*.html" \
-            --cache-control "public,max-age=0,must-revalidate" \
-            --content-type "text/html; charset=utf-8" \
-            --delete
-
-      - name: Invalidate CloudFront
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" \
-            --paths "/*"
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./out/
+          server-dir: ${{ vars.FTP_SERVER_DIR }}   # e.g. /public_html/
+          dangerous-clean-slate: false
+          # Only changed files are transferred; this manifest tracks state.
+          state-name: .ftp-deploy-sync-state.json
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
