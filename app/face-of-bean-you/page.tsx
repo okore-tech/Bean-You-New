@@ -189,7 +189,7 @@ export default function FaceOfBeanYouPage() {
         <section className="clip-diagonal relative overflow-hidden bg-[#fefae0] px-6 py-24 text-[#4e342e]">
           <div className="floating-blob absolute left-0 top-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl" style={{ backgroundColor: "#fecaca" }} data-aos="zoom-in" />
           <div className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-2xl" style={{ backgroundColor: "#ea580c" }} data-aos="zoom-in" data-aos-delay="300" />
-          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-10" />
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col-reverse items-center gap-10 md:flex-row">
             <div className="text-center md:w-1/2 md:text-left">
               <h1 className="mb-6 text-5xl font-bold">Find Your Tribe, Build Your Bean You.</h1>
@@ -220,12 +220,19 @@ export default function FaceOfBeanYouPage() {
         {/* MISS KENYA */}
         <section id="misskenya" className="relative overflow-hidden bg-orange-100 px-6 py-24 text-[#4e342e]">
           <div className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl" style={{ backgroundColor: "#c2410c" }} data-aos="fade-right" />
-          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-10" />
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center justify-between gap-10 md:flex-row">
             <div className="md:w-1/2" data-aos="fade-right">
               <div className="overflow-hidden rounded-xl border-8 border-orange-200 shadow-2xl">
-                <video controls className="h-auto w-full rounded-xl" playsInline>
+                <video
+                  controls
+                  playsInline
+                  preload="none"
+                  poster="/images/grace-poster.jpg"
+                  className="h-auto w-full rounded-xl"
+                >
                   <source src="/videos/grace.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
                 </video>
               </div>
             </div>
@@ -242,7 +249,7 @@ export default function FaceOfBeanYouPage() {
         {/* TRIBE SECTION */}
         <section id="faces" className="relative overflow-hidden bg-[#e1b382] px-6 py-24 text-[#4e342e]">
           <div className="floating-blob absolute right-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-3xl" style={{ backgroundColor: "#9a3412" }} data-aos="fade-left" />
-          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-10" />
           <div className="relative z-10 mx-auto max-w-6xl">
             <h2 className="mb-12 text-center text-4xl font-bold">Meet the Tribe</h2>
 
@@ -341,7 +348,7 @@ export default function FaceOfBeanYouPage() {
               className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm"
               onClick={(e) => { if (e.currentTarget === e.target) setLightboxOpen(false); }}
             >
-              <div className="pointer-events-none absolute inset-0 opacity-10 mix-blend-overlay" style={{ backgroundImage: "url(/images/texture.png)" }} />
+              <div className="pointer-events-none absolute inset-0 opacity-10 mix-blend-overlay" />
               <div className="relative w-full max-w-3xl p-4">
                 <button
                   onClick={() => setLightboxOpen(false)}
@@ -363,11 +370,17 @@ export default function FaceOfBeanYouPage() {
                       />
                     </div>
                   ) : (
-                    <video controls autoPlay playsInline className="max-h-[80vh] w-full">
-                      <source src={videoUrl} type={/\.mov$/i.test(videoUrl) ? "video/quicktime" : "video/mp4"} />
-                      { /\.mov$/i.test(videoUrl) && (
-                        <source src={videoUrl.replace(/\.mov$/i, "Vivian.mp4")} type="video/mp4" />
-                      ) }
+                    <video
+                      controls
+                      autoPlay
+                      playsInline
+                      preload="metadata"
+                      poster={videoUrl
+                        .replace("/videos/", "/images/")
+                        .replace(/\.mp4$/i, "-poster.jpg")}
+                      className="max-h-[80vh] w-full"
+                    >
+                      <source src={videoUrl} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   )}
@@ -381,7 +394,7 @@ export default function FaceOfBeanYouPage() {
         <section id="contact" className="relative overflow-hidden bg-[#fcd5ce] px-6 py-24 text-[#4e342e]">
           <div className="floating-blob absolute left-0 top-0 h-96 w-96 rounded-full mix-blend-multiply blur-2xl" style={{ backgroundColor: "#fecaca" }} />
           <div className="floating-blob absolute bottom-0 right-0 h-80 w-80 rounded-full mix-blend-multiply blur-3xl" style={{ backgroundColor: "#c2410c" }} />
-          <div className="pointer-events-none absolute inset-0 opacity-10" style={{ backgroundImage: "url(/images/texture.png)" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-10" />
           <div className="relative z-10 mx-auto max-w-xl text-center">
             <h2 className="mb-4 text-4xl font-bold">📬 Let’s Brew Something</h2>
             <p className="mb-6">Collab, connect, or just say hi — we’re building this tribe together.</p>

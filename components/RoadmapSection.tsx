@@ -32,11 +32,16 @@ function useIsMobile() {
 
 /* 3D pressable gradient button */
 function Press3DButton(
-  props: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }
+  props: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    children: React.ReactNode;
+    /* Render as a <span> when nested inside a <Link>, which already emits an <a>.
+       Nested anchors are invalid HTML and break hydration. */
+    as?: 'a' | 'span';
+  }
 ) {
-  const { className = '', children, ...rest } = props;
+  const { className = '', children, as: Tag = 'a', ...rest } = props;
   return (
-    <a
+    <Tag
       {...rest}
       className={[
         'relative inline-flex items-center justify-center rounded-full px-5 py-2.5',
@@ -49,7 +54,7 @@ function Press3DButton(
       ].join(' ')}
     >
       {children}
-    </a>
+    </Tag>
   );
 }
 
@@ -424,7 +429,7 @@ useEffect(() => {
                 </Press3DButton>
               ) : (
                 <Link href={item.cta.href} className="inline-block">
-                  <Press3DButton>{item.cta.label}</Press3DButton>
+                  <Press3DButton as="span">{item.cta.label}</Press3DButton>
                 </Link>
               )}
             </>

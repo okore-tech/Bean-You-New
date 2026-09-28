@@ -1,7 +1,10 @@
 /* eslint-disable react/no-unescaped-entities */
 import React from "react";
 
-export const metadata = { title: "Terms of Use — Bean You®" };
+export const metadata = {
+  title: { absolute: "Terms of Use — Bean You®" },
+  alternates: { canonical: "/legal/terms/" },
+};
 
 export default function TermsPage() {
   return (

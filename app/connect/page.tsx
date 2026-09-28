@@ -559,7 +559,8 @@ export default function ConnectPage() {
         <div
           ref={parallaxRef}
           className="absolute inset-0 bg-cover bg-center opacity-10 will-change-transform"
-          style={{ backgroundImage: "url('/images/bg-beans.jpg')" }}
+          /* TODO: /images/bg-beans.jpg has never existed in this repo. Add the
+             asset and restore backgroundImage here, or drop this layer. */
           data-parallax=""
         />
 <div className="relative z-10 max-w-3xl mx-auto px-6" data-aos="fade-up">

@@ -39,11 +39,16 @@ function redirectToStore(): boolean {
    3D Button
 ────────────────────────────────────────────── */
 function Press3DButton(
-  props: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }
+  props: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    children: React.ReactNode;
+    /* Render as a <span> when nested inside a <Link>, which already emits an <a>.
+       Nested anchors are invalid HTML and break hydration. */
+    as?: "a" | "span";
+  }
 ) {
-  const { className = "", children, ...rest } = props;
+  const { className = "", children, as: Tag = "a", ...rest } = props;
   return (
-    <a
+    <Tag
       {...rest}
       className={[
         "relative inline-flex items-center justify-center rounded-full px-5 py-2.5",
@@ -56,7 +61,7 @@ function Press3DButton(
       ].join(" ")}
     >
       {children}
-    </a>
+    </Tag>
   );
 }
 
@@ -328,7 +333,7 @@ function StepSection({
                 </Press3DButton>
               ) : (
                 <Link key={c.label} href={c.href!} className="inline-block">
-                  <Press3DButton>{c.label}</Press3DButton>
+                  <Press3DButton as="span">{c.label}</Press3DButton>
                 </Link>
               )
             )}
@@ -559,7 +564,7 @@ export default function ExplorePage() {
           <p className="mt-3 text-orange-50/95">Connect to your tribe, support farmers, and earn rewards for doing good.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/connect" className="inline-block">
-              <Press3DButton>Explore Connect</Press3DButton>
+              <Press3DButton as="span">Explore Connect</Press3DButton>
             </Link>
           </div>
         </div>

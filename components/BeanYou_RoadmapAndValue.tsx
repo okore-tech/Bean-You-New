@@ -328,6 +328,14 @@ function YearSticker({ year }: { year: string }) {
 }
 
 /* ---------- Floating particles ---------- */
+/* Deterministic pseudo-random so the server and client render identical
+   values. Math.random() here produced a different layout on each side and
+   broke hydration on /roadmap. */
+function seeded(i: number, salt: number) {
+  const x = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+
 function Particles() {
   const dots = new Array(20).fill(0);
   return (
@@ -337,10 +345,10 @@ function Particles() {
           key={i}
           className="absolute h-1.5 w-1.5 bg-yellow-300/40 rounded-full animate-float"
           style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${(Math.random() * 4).toFixed(2)}s`,
-            animationDuration: `${(3 + Math.random() * 4).toFixed(2)}s`,
+            top: `${(seeded(i, 1) * 100).toFixed(4)}%`,
+            left: `${(seeded(i, 2) * 100).toFixed(4)}%`,
+            animationDelay: `${(seeded(i, 3) * 4).toFixed(2)}s`,
+            animationDuration: `${(3 + seeded(i, 4) * 4).toFixed(2)}s`,
           }}
         />
       ))}

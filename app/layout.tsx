@@ -1,4 +1,5 @@
 import "@/app/globals.css";
+import type { Metadata } from "next";
 import { ReactNode } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,9 +10,26 @@ const poppins = Poppins({
   weight: ["400", "600", "700", "800"]
 });
 
-export const metadata = {
-  title: "Bean You - Find Your Tribe",
-  description: "Explore communities to learn, trade, invest, and connect."
+export const metadata: Metadata = {
+  metadataBase: new URL("https://beanyou.com"),
+  title: {
+    default: "Bean You - Find Your Tribe",
+    template: "%s | Bean You",
+  },
+  description: "Explore communities to learn, trade, invest, and connect.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    siteName: "Bean You",
+    type: "website",
+    url: "/",
+    title: "Bean You - Find Your Tribe",
+    description: "Explore communities to learn, trade, invest, and connect.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bean You - Find Your Tribe",
+    description: "Explore communities to learn, trade, invest, and connect.",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
