@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE = "https://beanyou.com";
+const SITE = "https://irwapilot.digital";
 
 // Static export: this is evaluated at build time and written to /sitemap.xml.
 export const dynamic = "force-static";

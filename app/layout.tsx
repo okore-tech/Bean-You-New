@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://beanyou.com"),
+  metadataBase: new URL("https://irwapilot.digital"),
   title: {
     default: "Bean You - Find Your Tribe",
     template: "%s | Bean You",

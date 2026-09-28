@@ -403,7 +403,7 @@ export default function TermsPage() {
               <li>Accepted: BTC, ETH, ETC, Fiat Money, MPesa.</li>
               <li>Minimum contribution: US $5. No cap on total contributions.</li>
               <li>
-                Official site: www.beanyou.com; use of exchanges/intermediaries
+                Official site: www.irwapilot.digital; use of exchanges/intermediaries
                 is at your own risk.
               </li>
               <li>
