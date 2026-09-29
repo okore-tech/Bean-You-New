@@ -72,11 +72,18 @@ function Hero() {
                 key={i}
                 className="mx-6 inline-block text-[13px] md:text-[15px] font-semibold tracking-wide text-amber-50/95 drop-shadow-[0_1px_0_rgba(0,0,0,0.25)]"
               >
-                It’s not just coffee, it’s an expression of yourself.
+                {i % 2 === 0
+                  ? "It’s not just coffee, it’s an expression of yourself."
+                  : "The 1m² Parcels programme closed in August 2026 — every adoption is honoured."}
               </span>
             ))}
           </div>
         </div>
+        {/* The track above is decorative; this is the notice screen readers get. */}
+        <p className="sr-only">
+          Notice: The 1m² Parcels programme closed in August 2026. Every adoption made before then is honoured.{" "}
+          <Link href="/parcels">Read how the programme worked.</Link>
+        </p>
       </div>
     </div>
 

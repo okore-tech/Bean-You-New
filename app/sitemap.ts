@@ -11,6 +11,7 @@ const routes = [
   { path: "/explore", priority: 0.9 },
   { path: "/connect", priority: 0.9 },
   { path: "/roadmap", priority: 0.7 },
+  { path: "/parcels", priority: 0.7 },
   { path: "/social", priority: 0.6 },
   { path: "/face-of-bean-you", priority: 0.7 },
   { path: "/legal/terms", priority: 0.3 },

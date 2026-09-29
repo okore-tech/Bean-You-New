@@ -207,19 +207,23 @@ export default function Footer() {
         </div>
       </Modal>
 
-      <Modal open={faqOpen} onClose={() => setFaqOpen(false)} title="BUY ESG — FAQ">
+      <Modal open={faqOpen} onClose={() => setFaqOpen(false)} title="1m² Parcels — FAQ">
         <div className="text-sm text-white/90">
+          <p className="mb-4 rounded-lg border border-orange-200/30 bg-orange-200/10 px-3 py-2 font-medium text-white">
+            The 1m² Parcels programme closed in August 2026 and no longer accepts new adoptions. Every adoption made before then is honoured. The answers below describe how it worked.{" "}
+            <Link href="/parcels" className="underline decoration-white/40 underline-offset-4 hover:text-orange-200">Read the full story.</Link>
+          </p>
           <p className="mb-4">
-            Through livestreams and symbolic &lsquo;adoption&rsquo; of coffee plots, you witness the life cycle of your coffee bean and the people behind it. It&rsquo;s not entertainment, it&rsquo;s consumption turning into connection.
+            Through livestreams and symbolic &lsquo;adoption&rsquo; of coffee plots, adopters witnessed the life cycle of their coffee bean and the people behind it. It wasn&rsquo;t entertainment; it was consumption turning into connection.
           </p>
 
           <FaqItem q="1. What is iRWA (intangible Real World Assets)?">
-            We connect Bean You® customers worldwide to coffee farmers in Kenya. We have created a digital twin of all our farms and broken the land into 1m² plots, equivalent to one coffee crop. We encourage our audience to connect to our 1m² coffee plots which carry rights and privileges they can benefit from.
+            We connected Bean You® customers worldwide to coffee farmers in Kenya. We created a digital twin of our farms and broke the land into 1m² plots, each equivalent to one coffee crop. Adopters connected to a 1m² coffee plot carrying rights and privileges they could benefit from.
           </FaqItem>
 
-          <FaqItem q="2. What&rsquo;s in it for me?">
+          <FaqItem q="2. What did adopters receive?">
             <p className="mb-3">
-              You gain both tangible and intangible value. We group these into <strong>Hard Benefits</strong> and <strong>Soft Benefits</strong>.
+              Adopters gained both tangible and intangible value. We grouped these into <strong>Hard Benefits</strong> and <strong>Soft Benefits</strong>.
             </p>
 
             <details className="group mb-3 rounded-lg border border-white/10 bg-white/5 p-3 open:mb-4">
@@ -249,20 +253,20 @@ export default function Footer() {
             </details>
           </FaqItem>
 
-          <FaqItem q="3. What is the Process?">
-            ESG investors can select which farm, zoom into 1m² plot(s) through our website and App at the touch of a button, and purchase the ESG rights.
+          <FaqItem q="3. How did it work?">
+            Adopters selected a farm, zoomed into a 1m² plot through our website or app at the touch of a button, and purchased the ESG rights.
           </FaqItem>
 
-          <FaqItem q="4. How much do I Pay?">
-            You pay as little as 500 KSH (less than US$ 4). Over time the price may increase due to rarity of available crops, so we encourage you to act quickly.
+          <FaqItem q="4. How much did it cost?">
+            Adoption started at 500 KSH (less than US$4) per plot.
           </FaqItem>
 
-          <FaqItem q="5. How do I Pay?">
-            On the website or mobile you can select and pay using KSH, credit/debit cards, MPesa and cryptocurrency.
+          <FaqItem q="5. How was it paid?">
+            On the website or in the app, adopters paid in KSH, credit/debit cards, M-Pesa or cryptocurrency.
           </FaqItem>
 
-          <FaqItem q="6. Where does my money go?">
-            Your donation, less costs, goes to the Asili Foundation, a not-for-profit ESG organisation registered in Kenya with a Board of Trustees that distribute funds to farmers for health, education and technology.
+          <FaqItem q="6. Where did the money go?">
+            Each donation, less costs, went to the Asili Foundation, a not-for-profit ESG organisation registered in Kenya with a Board of Trustees that distribute funds to farmers for health, education and technology.
           </FaqItem>
 
           <FaqItem q="7. Can I get support?">

@@ -67,7 +67,7 @@ const ROADMAP_ITEMS: Array<{
       "Map user web3 values systems using Bean You® AI through the App",
     ],
     artSrc: "/images/token2.png",
-    ctas: [{ label: "Farm Platform", href: "https://parcels.beanyou.com/" }],
+    ctas: [{ label: "The 1m² Story", href: "/parcels" }],
   },
   {
     year: "2026",
@@ -112,10 +112,10 @@ const VALUE_SLIDES: Array<{
   {
     key: "irwa",
     image: "/images/token.png",
-    heading: "Farms + iRWA Platform",
-    blurb: "Adopt coffee crops, track the journey, and support ESG projects.",
-    bullets: ["Platform tools", "Service revenue", "Donations"],
-    cta: { label: "Explore Farm Platform", href: "https://parcels.beanyou.com/" },
+    heading: "Farms + iRWA (2025–2026)",
+    blurb: "We twinned real farms into 1m² crops that people adopted and followed. The programme closed in August 2026; every adoption is honoured.",
+    bullets: ["Digital twin of five farms", "1m² = one coffee crop", "Asili Foundation donations"],
+    cta: { label: "Read the story", href: "/parcels" },
   },
 ];
 
@@ -550,14 +550,12 @@ function ValueProfitCarousel({ slides = VALUE_SLIDES }: { slides?: typeof VALUE_
   >
     Meet Your Tribe
   </Link>
-  <a
-    href="https://parcels.beanyou.com/"
-    target="_blank"
-    rel="noreferrer"
+  <Link
+    href="/parcels"
     className="px-5 py-3 rounded-full bg-white/10 text-yellow-200 border border-white/20 hover:bg-white/15 transition"
   >
-    Explore Farm Platform
-  </a>
+    The 1m² Story
+  </Link>
   <SmartGetAppButton />
 </div>   {/* ✅ closes correctly */}
       </div>

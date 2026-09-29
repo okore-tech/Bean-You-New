@@ -317,7 +317,7 @@ export default function RoadmapSection() {
         titleEyebrow: 'Investor',
         title: 'Your Wealth Creation',
         body: 'Invest in identity. Grow with purpose. Empower communities.',
-        cta: { label: 'Discover More', href: 'https://parcels.beanyou.com/', external: true },
+        cta: { label: 'The 1m² Story', href: '/parcels' },
         bg: 'secondary',
       },
       {

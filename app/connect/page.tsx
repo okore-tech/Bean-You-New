@@ -183,20 +183,19 @@ export default function ConnectPage() {
           copy: (
             <>
               <p className="text-gray-700 text-sm leading-relaxed">
-                Back farmers and measurable impact by adopting 1m² coffee plots as
-                iRWA. Track outcomes, link to ESG, and help scale a values-led ecosystem.
+                From 2025 to August 2026, backers adopted 1m² coffee plots as iRWA —
+                tracking outcomes and linking them to ESG. The programme has closed;
+                existing adoptions are honoured.
               </p>
             </>
           ),
           cta: (
-            <a
-              href="https://parcels.beanyou.com/"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href="/parcels"
               className="self-center sm:self-start text-center w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
             >
-              🌍 Open iRWA Platform
-            </a>
+              🌍 How the 1m² plots worked
+            </Link>
           ),
         };
       case "coffee":

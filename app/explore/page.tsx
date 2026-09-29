@@ -395,10 +395,10 @@ export default function ExplorePage() {
       {
         id: "step-5",
         n: "5",
-        title: "Support the Farm Behind Your Coffee",
-        text: "Adopt a coffee crop from as little as US$3.8 one-off, chat with the farmer, and follow the journey.",
+        title: "The Farm Behind Your Coffee",
+        text: "From 2025 to August 2026, members adopted 1m² coffee crops on real Kenyan farms and followed them through the season. The programme has closed; every adoption is honoured.",
         img: "/images/kahirofarm.webp",
-        ctas: [{ label: "Adopt on the 1m² Platform", href: "https://parcels.beanyou.com/" }],
+        ctas: [{ label: "Read the 1m² story", href: "/parcels" }],
       },
     ],
     [onGetApp]

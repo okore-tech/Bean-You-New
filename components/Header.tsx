@@ -15,16 +15,15 @@ const nav = [
   { href: "/social", label: "Social Media" },
 ];
 
-const ESG_URL = "https://parcels.beanyou.com/";
+// The parcels platform closed in August 2026; this now leads to the story page.
+const PARCELS_URL = "/parcels";
 
 function ESGInvestButton({ className = "" }: { className?: string }) {
-  const hoverCopy = "  Own 1m² Crops"; // note leading spaces per your request
+  const hoverCopy = "  How it worked";
   return (
     <Link
-      href={ESG_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Open ESG Invest (opens in a new tab)"
+      href={PARCELS_URL}
+      aria-label="The 1m² Parcels story"
       className={clsx(
         "group press3d relative inline-flex items-center rounded-full p-[2px]",
         "bg-gradient-to-r from-amber-300 via-orange-400 to-[#BD570F]",
@@ -43,10 +42,9 @@ function ESGInvestButton({ className = "" }: { className?: string }) {
           <path d="M12 3c4.97 0 9 3.134 9 7 0 3.866-4.03 7-9 7s-9-3.134-9-7c0-.523.07-1.03.2-1.52l2.07.64C6.09 9.39 6 9.69 6 10c0 2.761 3.134 5 7 5s7-2.239 7-5-3.134-5-7-5c-2.244 0-4.244.81-5.434 2.06l-1.47-1.35C7.64 3.82 9.69 3 12 3Zm0 7c.552 0 1 .448 1 1v7h-2v-7c0-.552.448-1 1-1Z" />
         </svg>
         <span className="label grid whitespace-nowrap">
-          <span className="label-default col-start-1 row-start-1">ESG Invest</span>
+          <span className="label-default col-start-1 row-start-1">1m² Parcels</span>
           <span className="label-hover col-start-1 row-start-1">{hoverCopy}</span>
         </span>
-        <span className="ml-1 inline-flex h-1.5 w-1.5 rounded-full bg-[#BD570F]/70 shadow-inner animate-pulse-soft" />
       </span>
     </Link>
   );

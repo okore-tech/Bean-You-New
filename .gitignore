@@ -13,3 +13,9 @@ tsconfig.tsbuildinfo
 # Editor / tooling
 .claude
 .vercel
+
+# Impeccable working files. PRODUCT.md and DESIGN.md are committed, and so are
+# the design sidecar and surface briefs; captures, decision payloads and scripts are not.
+.impeccable/*
+!.impeccable/design.json
+!.impeccable/surfaces/
