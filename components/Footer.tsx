@@ -129,7 +129,7 @@ export default function Footer() {
 
         {/* Bottom row */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-white/80">
-          <div>© Bean You® 2025</div>
+          <div>© Bean You® 2026</div>
           <div className="opacity-80">
             Built for mobile • Tap-friendly • Accessible
           </div>

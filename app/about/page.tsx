@@ -49,6 +49,7 @@ export default function AboutPage() {
 
   const internationalPartners = [
     { name: "CCEG Blockchain UN lab", img: "/images/partnerblockchain.png", desc: "Global 4IR collaborator." },
+    { name: "iRWA · irwa.digital", img: "/images/partner-irwa.png", desc: "intangible Real World Assets." },
     { name: "AITEA ", img: "/images/hovername.png", desc: "AI / Web3 specialist." },
     { name: "MiValues", img: "/images/mivalues.jpg", desc: "Blockchain & ESG tooling." },
     { name: "MiMeta", img: "/images/mimeta.jpg", desc: "Blockchain & ESG tooling." },
